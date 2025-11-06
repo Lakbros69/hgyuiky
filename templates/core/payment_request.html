@@ -1,0 +1,134 @@
+{% extends 'base.html' %}
+
+{% block title %}Payment Request - IGS OP{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="container">
+        <a href="{% url 'buy_coins' %}" class="back-link">
+            <i class="fas fa-arrow-left"></i> Back to Packages
+        </a>
+        <h1><i class="fas fa-qrcode"></i> PAYMENT REQUEST</h1>
+        <p>Complete your payment and submit proof</p>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <div class="payment-grid">
+            <!-- QR Code Card -->
+            <div class="qr-card">
+                <h2><i class="fas fa-qrcode"></i> {{ payment_method.name }}</h2>
+                <p class="method-type">{{ payment_method.get_method_type_display }}</p>
+                
+                <div class="qr-image">
+                    {% if payment_method.qr_code %}
+                        <img src="{{ payment_method.qr_code.url }}" alt="{{ payment_method.name }}">
+                    {% else %}
+                        <div class="no-qr">
+                            <i class="fas fa-qrcode"></i>
+                            <p>No QR code available</p>
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="payment-info">
+                    {% if payment_method.account_name %}
+                    <div class="info-row">
+                        <strong><i class="fas fa-user"></i> Account Name:</strong>
+                        <span>{{ payment_method.account_name }}</span>
+                    </div>
+                    {% endif %}
+                    {% if payment_method.account_number %}
+                    <div class="info-row">
+                        <strong><i class="fas fa-hashtag"></i> Account Number:</strong>
+                        <span>{{ payment_method.account_number }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                {% if payment_method.instructions %}
+                <div class="instructions">
+                    <h4><i class="fas fa-info-circle"></i> Instructions:</h4>
+                    <p>{{ payment_method.instructions|linebreaks }}</p>
+                </div>
+                {% endif %}
+            </div>
+            
+            <!-- Payment Form Card -->
+            <div class="form-card">
+                <h2><i class="fas fa-upload"></i> Submit Payment Proof</h2>
+                
+                <form method="post" enctype="multipart/form-data" class="form">
+                    {% csrf_token %}
+                    
+                    <div class="form-group">
+                        <label>{{ form.coins_amount.label }}</label>
+                        {{ form.coins_amount }}
+                        {% if form.coins_amount.errors %}
+                            <span class="error">{{ form.coins_amount.errors.0 }}</span>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>{{ form.payment_amount.label }}</label>
+                        {{ form.payment_amount }}
+                        {% if form.payment_amount.errors %}
+                            <span class="error">{{ form.payment_amount.errors.0 }}</span>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>{{ form.transaction_id.label }}</label>
+                        {{ form.transaction_id }}
+                        {% if form.transaction_id.errors %}
+                            <span class="error">{{ form.transaction_id.errors.0 }}</span>
+                        {% endif %}
+                        <small>Optional - If available from payment app</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>{{ form.payment_screenshot.label }} <span class="required">*</span></label>
+                        {{ form.payment_screenshot }}
+                        {% if form.payment_screenshot.errors %}
+                            <span class="error">{{ form.payment_screenshot.errors.0 }}</span>
+                        {% endif %}
+                        <small>Upload a clear screenshot of your payment</small>
+                    </div>
+                    
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <strong>Important:</strong> Your payment will be verified by admin. Please ensure all details are correct.
+                    </div>
+                    
+                    <div class="info-box">
+                        <div class="info-item">
+                            <strong>Your User ID:</strong>
+                            <code>{{ user.user_id }}</code>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary btn-lg btn-block">
+                        <i class="fas fa-check-circle"></i> Submit Payment Request
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% block extra_js %}
+<script>
+// Auto-fill coins and price from session storage
+window.addEventListener('DOMContentLoaded', function() {
+    const coins = sessionStorage.getItem('selected_coins');
+    const price = sessionStorage.getItem('selected_price');
+    
+    if (coins && price) {
+        document.querySelector('input[name="coins_amount"]').value = coins;
+        document.querySelector('input[name="payment_amount"]').value = price;
+    }
+});
+</script>
+{% endblock %}
+{% endblock %}

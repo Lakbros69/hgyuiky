@@ -1,0 +1,169 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Create PUBG Match Room{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="container">
+        <a href="javascript:history.back()" class="back-link">
+            <i class="fas fa-arrow-left"></i> Back
+        </a>
+        <h1><i class="fas fa-trophy"></i> CREATE MATCH ROOM</h1>
+        <p class="points-badge"><i class="fas fa-coins"></i> {{ user.coins }} Points</p>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <div class="create-tournament-container">
+            <div class="info-banner">
+                <i class="fas fa-info-circle"></i>
+                <div>
+                    <strong>Create your tournaments</strong>
+                    <p>Create your own match. This match will be shown to others players in this app.</p>
+                </div>
+            </div>
+
+            <h2 class="game-title"><span class="game-name">{{ game_name }}'s</span> <span class="matchroom-text">Matchroom</span></h2>
+
+            <form method="post" class="tournament-form" id="tournamentForm">
+                {% csrf_token %}
+
+                <!-- Game Mode Section -->
+                <div class="form-section">
+                    <h3>Choose Game Mode:</h3>
+                    <div class="button-group">
+                        <button type="button" class="mode-btn active" name="game_mode" value="tpp" data-mode="tpp">
+                            TPP
+                        </button>
+                        <button type="button" class="mode-btn" name="game_mode" value="fpp" data-mode="fpp">
+                            FPP
+                        </button>
+                    </div>
+                    <input type="hidden" name="game_mode" value="tpp" id="gameModeInput">
+                </div>
+
+                <!-- Team Size Section -->
+                <div class="form-section">
+                    <h3>Team:</h3>
+                    <div class="button-group">
+                        <button type="button" class="team-btn active" data-team="1">1v1</button>
+                        <button type="button" class="team-btn" data-team="2">2v2</button>
+                        <button type="button" class="team-btn" data-team="3">3v3</button>
+                        <button type="button" class="team-btn" data-team="4">4v4</button>
+                    </div>
+                    <input type="hidden" name="team_size" value="1" id="teamSizeInput">
+                </div>
+
+                <!-- Map Selection Section -->
+                <div class="form-section">
+                    <h3>Select Preferred Map</h3>
+                    <div class="button-group">
+                        <button type="button" class="map-btn active" data-map="erangel">Erangel</button>
+                        <button type="button" class="map-btn" data-map="miramar">Miramar</button>
+                        <button type="button" class="map-btn" data-map="sanhok">Sanhok</button>
+                        <button type="button" class="map-btn" data-map="vikendi">Vikendi</button>
+                    </div>
+                    <input type="hidden" name="map" value="erangel" id="mapInput">
+                </div>
+
+                <!-- Matchroom Name Section -->
+                <div class="form-section">
+                    <h3>Matchroom Name:</h3>
+                    <input type="text" name="matchroom_name" class="form-input" placeholder="Enter your matchroom Name" required>
+                </div>
+
+                <!-- Entry Fee & Prize Section -->
+                <div class="form-section">
+                    <div class="form-row-double">
+                        <div class="form-group">
+                            <label>Entry Fee</label>
+                            <input type="number" name="entry_fee" class="form-input" placeholder="Entry Fee" min="0" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Potential Winning</label>
+                            <input type="number" name="prize_pool" class="form-input" placeholder="Potential Winning" min="0" required>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Match Rules Section -->
+                <div class="form-section">
+                    <details class="rules-dropdown">
+                        <summary>Match Rules & Regulations</summary>
+                        <textarea name="rules" class="form-textarea" rows="5" placeholder="Enter match rules and regulations..."></textarea>
+                    </details>
+                </div>
+
+                <!-- Date & Time Section -->
+                <div class="form-section">
+                    <h3>Choose Game Time:</h3>
+                    <div class="form-row-double">
+                        <div class="form-group">
+                            <label>Date</label>
+                            <input type="date" name="date" class="form-input" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Select Time</label>
+                            <input type="time" name="time" class="form-input" required>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Agreement Checkbox -->
+                <div class="form-section">
+                    <label class="checkbox-label">
+                        <input type="checkbox" required>
+                        <span>I understand the Match Room rules and agree to them.</span>
+                    </label>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="btn-create-matchroom">
+                    Create Matchroom
+                </button>
+            </form>
+        </div>
+    </div>
+</section>
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Game Mode Toggle
+    document.querySelectorAll('.mode-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            document.getElementById('gameModeInput').value = this.dataset.mode;
+        });
+    });
+
+    // Team Size Toggle
+    document.querySelectorAll('.team-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.team-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            document.getElementById('teamSizeInput').value = this.dataset.team;
+        });
+    });
+
+    // Map Toggle
+    document.querySelectorAll('.map-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.map-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            document.getElementById('mapInput').value = this.dataset.map;
+        });
+    });
+
+    // Set minimum date to today
+    const dateInput = document.querySelector('input[name="date"]');
+    if (dateInput) {
+        dateInput.min = new Date().toISOString().split('T')[0];
+    }
+});
+</script>
+{% endblock %}
+{% endblock %}

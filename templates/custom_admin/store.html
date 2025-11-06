@@ -1,0 +1,104 @@
+{% extends 'custom_admin/base.html' %}
+{% load static %}
+
+{% block title %}Store Management{% endblock %}
+{% block page_title %}Store Items{% endblock %}
+
+{% block content %}
+<div class="store-header">
+    <div class="store-stats">
+        <div class="stat-badge">
+            <span>Total Items: <strong>{{ total_items }}</strong></span>
+        </div>
+        <div class="stat-badge">
+            <span>Active: <strong>{{ active_count }}</strong></span>
+        </div>
+    </div>
+    
+    <a href="{% url 'custom_admin:add_item' %}" class="btn btn-primary">
+        <i class="fas fa-plus-circle"></i> Add New Item
+    </a>
+</div>
+
+<!-- Game Category Cards Grid -->
+<div class="game-categories-grid">
+    {% for key, category in game_categories.items %}
+        <div class="game-category-section">
+            <div class="game-category-card">
+                <div class="game-category-banner">
+                    <div class="banner-content">
+                        <h3>{{ category.title }}</h3>
+                        <ul class="product-types">
+                            {% for type in category.types %}
+                                <li>● {{ type }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    <div class="banner-icon">
+                        {% if category.image %}
+                            <img src="{{ category.image }}" alt="{{ category.name }}">
+                        {% else %}
+                            <i class="fas fa-{{ category.icon }} fa-3x"></i>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="category-info">
+                    <h4 class="category-name">{{ category.name }}</h4>
+                    <div class="category-stats">
+                        <span class="stat-item">
+                            <i class="fas fa-box"></i> {{ category.total }} items
+                        </span>
+                        <span class="stat-item active">
+                            <i class="fas fa-check-circle"></i> {{ category.active }} active
+                        </span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Items List for this Game -->
+            {% if category.items %}
+            <div class="game-items-list">
+                <h4 class="items-list-title">
+                    <i class="fas fa-list"></i> {{ category.name }} Items
+                </h4>
+                <div class="items-grid-mini">
+                    {% for item in category.items %}
+                    <div class="item-mini-card">
+                        <div class="item-mini-header">
+                            <h5>{{ item.name }}</h5>
+                            <span class="badge badge-{{ item.is_active|yesno:'active,inactive' }}">
+                                {{ item.is_active|yesno:'Active,Inactive' }}
+                            </span>
+                        </div>
+                        <div class="item-mini-info">
+                            <span><i class="fas fa-gem"></i> {{ item.quantity }}</span>
+                            <span><i class="fas fa-coins"></i> {{ item.price }}</span>
+                        </div>
+                        <div class="item-mini-actions">
+                            <a href="{% url 'custom_admin:edit_item' item.id %}" class="btn-mini btn-edit">
+                                <i class="fas fa-edit"></i> Edit
+                            </a>
+                            <form method="post" action="{% url 'custom_admin:toggle_item' item.id %}" style="display: inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn-mini btn-toggle">
+                                    <i class="fas fa-{% if item.is_active %}eye-slash{% else %}eye{% endif %}"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    {% endfor %}
+</div>
+
+{% if not game_categories %}
+<div class="empty-state-large">
+    <i class="fas fa-store"></i>
+    <h3>No store items</h3>
+    <p>Click "Add New Item" button above to create your first store item!</p>
+</div>
+{% endif %}
+{% endblock %}

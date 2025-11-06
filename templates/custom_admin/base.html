@@ -1,0 +1,192 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Admin Dashboard{% endblock %} | IGS OP</title>
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'css/components.css' %}">
+    <link rel="stylesheet" href="{% static 'css/custom_admin.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="admin-body">
+    <!-- Mobile Backdrop -->
+    <div class="admin-backdrop" id="adminBackdrop"></div>
+    
+    <!-- Admin Sidebar -->
+    <aside class="admin-sidebar" id="adminSidebar">
+        <div class="admin-logo">
+            <i class="fas fa-gamepad"></i>
+            <span>Admin Panel</span>
+        </div>
+        
+        <nav class="admin-nav">
+            <a href="{% url 'custom_admin:dashboard' %}" class="admin-nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+                <i class="fas fa-chart-line"></i>
+                <span>Dashboard</span>
+            </a>
+            
+            <a href="{% url 'custom_admin:payments' %}" class="admin-nav-link {% if 'payments' in request.path %}active{% endif %}">
+                <i class="fas fa-money-bill-wave"></i>
+                <span>Payments</span>
+                {% if pending_payments > 0 %}
+                <span class="badge-count">{{ pending_payments }}</span>
+                {% endif %}
+            </a>
+            
+            <a href="{% url 'custom_admin:orders' %}" class="admin-nav-link {% if 'orders' in request.path %}active{% endif %}">
+                <i class="fas fa-shopping-bag"></i>
+                <span>Orders</span>
+                {% if pending_orders > 0 %}
+                <span class="badge-count">{{ pending_orders }}</span>
+                {% endif %}
+            </a>
+            
+            <a href="{% url 'custom_admin:store' %}" class="admin-nav-link {% if 'store' in request.path %}active{% endif %}">
+                <i class="fas fa-store"></i>
+                <span>Store Items</span>
+            </a>
+            
+            <a href="{% url 'custom_admin:users' %}" class="admin-nav-link {% if 'users' in request.path %}active{% endif %}">
+                <i class="fas fa-users"></i>
+                <span>Users</span>
+            </a>
+            
+            <a href="{% url 'custom_admin:payment_methods' %}" class="admin-nav-link {% if 'payment-methods' in request.path %}active{% endif %}">
+                <i class="fas fa-credit-card"></i>
+                <span>Payment Methods</span>
+            </a>
+            
+            <a href="{% url 'custom_admin:withdrawals' %}" class="admin-nav-link {% if 'withdrawals' in request.path %}active{% endif %}">
+                <i class="fas fa-money-bill-wave"></i>
+                <span>Withdrawals</span>
+            </a>
+            
+            <a href="{% url 'custom_admin:chat_management' %}" class="admin-nav-link {% if 'chat' in request.path %}active{% endif %}">
+                <i class="fas fa-comments"></i>
+                <span>Chat</span>
+            </a>
+            
+            <a href="{% url 'custom_admin:games' %}" class="admin-nav-link {% if 'games' in request.path and 'tournaments' not in request.path %}active{% endif %}">
+                <i class="fas fa-gamepad"></i>
+                <span>Games</span>
+            </a>
+            
+            <a href="{% url 'custom_admin:full_tournaments' %}" class="admin-nav-link {% if 'tournaments' in request.path %}active{% endif %}">
+                <i class="fas fa-trophy"></i>
+                <span>Tournaments</span>
+            </a>
+            
+            <a href="{% url 'custom_admin:settings' %}" class="admin-nav-link {% if 'settings' in request.path %}active{% endif %}">
+                <i class="fas fa-cog"></i>
+                <span>Settings</span>
+            </a>
+            
+            <div class="admin-nav-divider"></div>
+            
+            <a href="{% url 'home' %}" class="admin-nav-link">
+                <i class="fas fa-home"></i>
+                <span>View Website</span>
+            </a>
+            
+            <a href="{% url 'logout' %}" class="admin-nav-link">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="admin-main">
+        <!-- Top Bar -->
+        <header class="admin-header">
+            <button class="admin-menu-toggle" id="adminMenuToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            
+            <h1 class="admin-title">{% block page_title %}Dashboard{% endblock %}</h1>
+            
+            <div class="admin-user-info">
+                <span class="admin-username">{{ request.user.username }}</span>
+                <div class="admin-avatar">
+                    <i class="fas fa-user-circle"></i>
+                </div>
+            </div>
+        </header>
+
+        <!-- Messages -->
+        {% if messages %}
+        <div class="admin-messages">
+            {% for message in messages %}
+            <div class="admin-message admin-message-{{ message.tags }}">
+                <i class="fas fa-{% if message.tags == 'success' %}check-circle{% elif message.tags == 'error' %}exclamation-circle{% elif message.tags == 'warning' %}exclamation-triangle{% else %}info-circle{% endif %}"></i>
+                <span>{{ message }}</span>
+                <button class="admin-message-close">&times;</button>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Page Content -->
+        <div class="admin-content">
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+
+    <script>
+        // Mobile menu toggle
+        const menuToggle = document.getElementById('adminMenuToggle');
+        const sidebar = document.getElementById('adminSidebar');
+        const backdrop = document.getElementById('adminBackdrop');
+        
+        function toggleSidebar() {
+            sidebar?.classList.toggle('active');
+            backdrop?.classList.toggle('active');
+            document.body.style.overflow = sidebar?.classList.contains('active') ? 'hidden' : '';
+        }
+        
+        menuToggle?.addEventListener('click', toggleSidebar);
+        backdrop?.addEventListener('click', toggleSidebar);
+        
+        // Close sidebar when clicking nav links on mobile
+        if (window.innerWidth <= 1024) {
+            document.querySelectorAll('.admin-nav-link').forEach(link => {
+                link.addEventListener('click', () => {
+                    sidebar?.classList.remove('active');
+                    backdrop?.classList.remove('active');
+                    document.body.style.overflow = '';
+                });
+            });
+        }
+
+        // Close messages
+        document.querySelectorAll('.admin-message-close').forEach(btn => {
+            btn.addEventListener('click', function() {
+                this.closest('.admin-message').style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => this.closest('.admin-message').remove(), 300);
+            });
+        });
+
+        // Auto-close messages after 5 seconds
+        setTimeout(() => {
+            document.querySelectorAll('.admin-message').forEach(msg => {
+                msg.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => msg.remove(), 300);
+            });
+        }, 5000);
+        
+        // Prevent body scroll when sidebar is open on mobile
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 1024) {
+                sidebar?.classList.remove('active');
+                backdrop?.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+        });
+    </script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

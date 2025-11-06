@@ -1,0 +1,204 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Store - IGS OP{% endblock %}
+
+{% block content %}
+<section class="section" style="margin-top: 2rem;">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title"><i class="fas fa-gamepad"></i> Choose Your Game</h2>
+            <p class="section-subtitle">Select a game to browse available items</p>
+        </div>
+        
+        <!-- Game Category Cards Grid -->
+        <div class="game-store-grid-enhanced">
+            {% for key, category in game_categories.items %}
+                <a href="{% url 'store_game_items' category.url_param %}" class="game-card-enhanced">
+                    <div class="game-card-image-wrapper">
+                        {% if category.image %}
+                            <img src="{{ category.image }}" alt="{{ category.name }}" class="game-card-img">
+                        {% else %}
+                            <div class="game-card-placeholder-new">
+                                <i class="fas fa-{{ category.icon }} fa-4x"></i>
+                            </div>
+                        {% endif %}
+                        <div class="game-card-overlay">
+                            <span class="view-items-btn"><i class="fas fa-arrow-right"></i> View Items</span>
+                        </div>
+                    </div>
+                    <div class="game-card-content">
+                        <h3 class="game-card-name">{{ category.name }}</h3>
+                        <p class="game-card-description">Top up now!</p>
+                    </div>
+                </a>
+            {% empty %}
+                <div class="empty-state-modern">
+                    <div class="empty-icon">
+                        <i class="fas fa-gamepad"></i>
+                    </div>
+                    <h3>No Games Available</h3>
+                    <p>Check back soon for exciting game items!</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<style>
+/* Section Header */
+.section-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.section-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0 0 0.5rem 0;
+}
+
+.section-subtitle {
+    font-size: 1.125rem;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+/* Enhanced Game Cards */
+.game-store-grid-enhanced {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 2rem;
+}
+
+.game-card-enhanced {
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    text-decoration: none;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    position: relative;
+}
+
+.game-card-enhanced:hover {
+    transform: translateY(-12px);
+    box-shadow: 0 20px 40px rgba(99, 102, 241, 0.2);
+}
+
+.game-card-image-wrapper {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+}
+
+.game-card-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+}
+
+.game-card-enhanced:hover .game-card-img {
+    transform: scale(1.1);
+}
+
+.game-card-placeholder-new {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.game-card-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+    padding: 2rem 1.5rem 1rem;
+    transform: translateY(100%);
+    transition: transform 0.4s ease;
+}
+
+.game-card-enhanced:hover .game-card-overlay {
+    transform: translateY(0);
+}
+
+.view-items-btn {
+    color: white;
+    font-weight: 700;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.game-card-content {
+    padding: 1.5rem;
+}
+
+.game-card-name {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0 0 0.5rem 0;
+}
+
+.game-card-description {
+    color: var(--text-secondary);
+    margin: 0;
+    font-size: 0.9rem;
+}
+
+/* Empty State */
+.empty-state-modern {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 4rem 2rem;
+}
+
+.empty-icon {
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 1.5rem;
+    background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.empty-icon i {
+    font-size: 3rem;
+    color: #9ca3af;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .game-store-grid-enhanced {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .game-store-grid-enhanced {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.75rem;
+    }
+    
+    .game-card-content {
+        padding: 1rem;
+    }
+    
+    .game-card-name {
+        font-size: 1rem;
+    }
+}
+</style>
+{% endblock %}

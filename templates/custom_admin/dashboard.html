@@ -1,0 +1,166 @@
+{% extends 'custom_admin/base.html' %}
+
+{% block title %}Dashboard{% endblock %}
+{% block page_title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<!-- Stats Cards -->
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-icon" style="background: linear-gradient(135deg, #10b981, #059669);">
+            <i class="fas fa-users"></i>
+        </div>
+        <div class="stat-info">
+            <h3>{{ total_users }}</h3>
+            <p>Total Users</p>
+            <span class="stat-change positive">+{{ new_users_week }} this week</span>
+        </div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
+            <i class="fas fa-money-bill-wave"></i>
+        </div>
+        <div class="stat-info">
+            <h3>{{ pending_payments }}</h3>
+            <p>Pending Payments</p>
+            <a href="{% url 'custom_admin:payments' %}?status=pending" class="stat-link">View all →</a>
+        </div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-icon" style="background: linear-gradient(135deg, #3b82f6, #2563eb);">
+            <i class="fas fa-shopping-bag"></i>
+        </div>
+        <div class="stat-info">
+            <h3>{{ pending_orders }}</h3>
+            <p>Pending Orders</p>
+            <a href="{% url 'custom_admin:orders' %}?status=pending" class="stat-link">View all →</a>
+        </div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-icon" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">
+            <i class="fas fa-trophy"></i>
+        </div>
+        <div class="stat-info">
+            <h3>{{ active_tournaments }}</h3>
+            <p>Active Tournaments</p>
+            <span class="stat-change">{{ total_tournaments }} total</span>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="admin-section quick-actions-wrapper">
+    <h2 class="section-title">QUICK ACTIONS</h2>
+    <div class="quick-actions">
+        <a href="{% url 'custom_admin:payments' %}?status=pending" class="quick-action-btn">
+            <div class="quick-action-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <span class="quick-action-text">Approve Payments</span>
+        </a>
+        <a href="{% url 'custom_admin:orders' %}?status=pending" class="quick-action-btn">
+            <div class="quick-action-icon">
+                <i class="fas fa-box-open"></i>
+            </div>
+            <span class="quick-action-text">Process Orders</span>
+        </a>
+        <a href="{% url 'custom_admin:add_item' %}" class="quick-action-btn">
+            <div class="quick-action-icon">
+                <i class="fas fa-shopping-bag"></i>
+            </div>
+            <span class="quick-action-text">Add Store Item</span>
+        </a>
+        <a href="{% url 'custom_admin:settings' %}" class="quick-action-btn">
+            <div class="quick-action-icon">
+                <i class="fas fa-globe"></i>
+            </div>
+            <span class="quick-action-text">Customize Website</span>
+        </a>
+    </div>
+</div>
+
+<!-- Recent Activity -->
+<div class="admin-section">
+    <h2 class="section-title">Recent Activity</h2>
+    
+    <div class="activity-grid">
+        <!-- Recent Users -->
+        <div class="activity-card">
+            <h3>New Users</h3>
+            <div class="activity-list">
+                {% for user in recent_users %}
+                <div class="activity-item">
+                    <div class="activity-icon">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="activity-details">
+                        <strong>{{ user.username }}</strong>
+                        <span>{{ user.date_joined|timesince }} ago</span>
+                    </div>
+                </div>
+                {% empty %}
+                <p class="empty-state">No recent users</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Recent Payments -->
+        <div class="activity-card">
+            <h3>Recent Payments</h3>
+            <div class="activity-list">
+                {% for payment in recent_payments %}
+                <div class="activity-item">
+                    <div class="activity-icon" style="background: {% if payment.status == 'approved' %}#10b981{% elif payment.status == 'pending' %}#f59e0b{% else %}#ef4444{% endif %};">
+                        <i class="fas fa-coins"></i>
+                    </div>
+                    <div class="activity-details">
+                        <strong>{{ payment.user.username }}</strong>
+                        <span>{{ payment.coins_amount }} coins - {{ payment.status }}</span>
+                    </div>
+                </div>
+                {% empty %}
+                <p class="empty-state">No recent payments</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Recent Orders -->
+        <div class="activity-card">
+            <h3>Recent Orders</h3>
+            <div class="activity-list">
+                {% for order in recent_orders %}
+                <div class="activity-item">
+                    <div class="activity-icon" style="background: {% if order.status == 'completed' %}#10b981{% elif order.status == 'pending' %}#f59e0b{% else %}#3b82f6{% endif %};">
+                        <i class="fas fa-shopping-cart"></i>
+                    </div>
+                    <div class="activity-details">
+                        <strong>{{ order.user.username }}</strong>
+                        <span>{{ order.item.name }} - {{ order.status }}</span>
+                    </div>
+                </div>
+                {% empty %}
+                <p class="empty-state">No recent orders</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Revenue Stats -->
+<div class="admin-section">
+    <h2 class="section-title">Revenue Overview</h2>
+    <div class="revenue-card">
+        <div class="revenue-stat">
+            <h3>Rs. {{ total_revenue|floatformat:2 }}</h3>
+            <p>Total Revenue</p>
+        </div>
+        <div class="revenue-stat">
+            <h3>{{ payments_week }}</h3>
+            <p>Payments This Week</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,81 @@
+{% load static %}
+<div class="tournament-card-new">
+    <div class="thumb">
+        {% if tournament.image %}
+            <img src="{{ tournament.image.url }}" alt="{{ tournament.title }}">
+        {% else %}
+            {% if tournament.game == 'freefire' %}
+                <img src="{% static 'images/freefire-icon.png' %}" alt="Free Fire" class="default-game-icon">
+            {% elif tournament.game == 'pubg' %}
+                <img src="{% static 'images/pubg-icon.png' %}" alt="PUBG" class="default-game-icon">
+            {% else %}
+                <i class="fas fa-trophy"></i>
+            {% endif %}
+        {% endif %}
+    </div>
+    <div class="body">
+        <div class="card-header-top">
+            <h3>{{ tournament.title }}</h3>
+            <span class="status-pill">
+                {% if tournament.is_full_tournament %}
+                    Not Started
+                {% else %}
+                    {% if tournament.status == 'upcoming' %}Not Started{% elif tournament.status == 'ongoing' %}Live{% else %}Completed{% endif %}
+                {% endif %}
+            </span>
+        </div>
+
+        <div class="meta-list">
+            <div class="meta-item">
+                <i class="fas fa-gamepad"></i>
+                <span>Gamemode: {% if tournament.game == 'freefire' %}Free Fire{% elif tournament.game == 'pubg' %}PUBG{% else %}{{ tournament.game }}{% endif %}</span>
+            </div>
+            <div class="meta-item">
+                <i class="fas fa-users"></i>
+                <span>Team: {{ tournament.team_type|default:'1v1' }}</span>
+            </div>
+            <div class="meta-item">
+                <i class="fas fa-user"></i>
+                <span>Created by: {% if tournament.creator %}{{ tournament.creator.username }}{% else %}Admin{% endif %}</span>
+            </div>
+            {% if tournament.is_full_tournament %}
+                <div class="meta-item">
+                    <i class="fas fa-trophy"></i>
+                    <span>Match ID: {{ tournament.matchroom_id }}</span>
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="time-rewards-row">
+            <div class="info-chip">
+                <i class="fas fa-clock"></i>
+                {{ tournament.tournament_date|date:"d M, g:i A" }}
+            </div>
+            <div class="info-chip">
+                <i class="fas fa-coins"></i>
+                {% if tournament.is_full_tournament %}
+                    Total: {{ tournament.prize_pool }} points
+                {% else %}
+                    {{ tournament.prize_pool }} points
+                {% endif %}
+            </div>
+        </div>
+
+        {% if tournament.is_full_tournament %}
+            <div class="prize-breakdown">
+                <small>1st: {{ tournament.first_place_prize }} | 2nd-5th: {{ tournament.rank_2_5_prize }} | Per Kill: {{ tournament.per_kill_prize }}</small>
+            </div>
+        {% endif %}
+
+        {% if tournament.is_full_tournament %}
+            <a href="{% url 'full_tournament_detail' tournament.id %}" class="join-btn">
+                join for {{ tournament.entry_fee }} points
+            </a>
+        {% else %}
+            <a href="{% url 'tournament_detail' tournament.id %}" class="join-btn">
+                join for {{ tournament.entry_fee }} points
+            </a>
+        {% endif %}
+    </div>
+</div>
+

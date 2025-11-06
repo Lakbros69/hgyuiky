@@ -1,0 +1,316 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Submit Result - {{ tournament.title }}{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="container">
+        <a href="{% url 'tournament_detail' tournament.pk %}" class="back-link">
+            <i class="fas fa-arrow-left"></i> Back to Tournament
+        </a>
+        <h1><i class="fas fa-flag-checkered"></i> Submit Match Result</h1>
+        <p>{{ tournament.title }}</p>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <div class="result-form-shell">
+            <div class="result-info-card">
+                <h4><i class="fas fa-info-circle"></i> How It Works</h4>
+                <ul>
+                    <li>Select your result: <strong>Win</strong> or <strong>Lose</strong></li>
+                    <li><strong>Winners:</strong> MUST upload screenshot proof (REQUIRED)</li>
+                    <li><strong>⏱️ Important:</strong> Opponent has <strong>10 minutes</strong> to submit after you</li>
+                    <li>If you select <strong>Lose</strong> and opponent doesn't submit → <strong>Opponent wins automatically</strong></li>
+                    <li>If both select <strong>Win</strong> → Admin reviews screenshots</li>
+                    <li>If both select <strong>Lose</strong> → Prize goes to admin</li>
+                    <li>If one selects <strong>Lose</strong> and other <strong>Win</strong> → Winner verified instantly</li>
+                </ul>
+            </div>
+
+            <div class="result-card">
+                <h3><i class="fas fa-trophy"></i> Submit Your Result</h3>
+                <form method="post" enctype="multipart/form-data" id="resultForm">
+                    {% csrf_token %}
+
+                    <div class="result-selection">
+                        <label class="result-option win-option">
+                            <input type="radio" name="result_claim" value="win" required>
+                            <div class="option-content">
+                                <i class="fas fa-trophy fa-2x"></i>
+                                <span>I Won</span>
+                            </div>
+                        </label>
+
+                        <label class="result-option lose-option">
+                            <input type="radio" name="result_claim" value="lose" required>
+                            <div class="option-content">
+                                <i class="fas fa-times-circle fa-2x"></i>
+                                <span>I Lost</span>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="form-group" id="screenshotSection">
+                        <label for="screenshot">
+                            <i class="fas fa-image"></i> Upload Screenshot <span class="required-text">* REQUIRED</span>
+                        </label>
+                        <input type="file" id="screenshot" name="screenshot" class="form-input" accept="image/*">
+                        <small>📸 Upload proof of your victory. Clear screenshots help verify the result faster.</small>
+                    </div>
+
+                    <div class="match-stats">
+                        <div class="stat-item">
+                            <span>Game:</span>
+                            <strong>{{ tournament.get_game_display }}</strong>
+                        </div>
+                        <div class="stat-item">
+                            <span>Prize Pool:</span>
+                            <strong class="text-success">{{ tournament.prize_pool }} Points</strong>
+                        </div>
+                        <div class="stat-item">
+                            <span>Entry Fee:</span>
+                            <strong>{{ tournament.entry_fee }} Points</strong>
+                        </div>
+                    </div>
+
+                    <div class="alert-warning">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <strong>Important:</strong> Make sure your selection is correct. You cannot change it after submission.
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-lg btn-block">
+                        <i class="fas fa-check"></i> Submit Result
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+.result-form-shell {
+    max-width: 640px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.result-info-card {
+    background: #dbeafe;
+    color: #1e40af;
+    padding: 1.5rem;
+    border-radius: 12px;
+}
+
+.result-info-card h4 {
+    margin: 0 0 0.75rem 0;
+    font-size: 1.1rem;
+}
+
+.result-info-card ul {
+    margin: 0;
+    padding-left: 1.25rem;
+    line-height: 1.8;
+}
+
+.result-card {
+    background: #ffffff;
+    border-radius: 18px;
+    padding: 2rem;
+    box-shadow: 0 12px 32px rgba(15, 23, 42, 0.1);
+}
+
+.result-card h3 {
+    margin: 0 0 1.5rem 0;
+    font-size: 1.4rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.result-selection {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+    user-select: none;
+    margin-bottom: 1.75rem;
+}
+
+.result-option {
+    position: relative;
+    cursor: pointer;
+}
+
+.result-option input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+}
+
+.option-content {
+    background: #ffffff;
+    border: 3px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 2rem 1rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.option-content i {
+    color: #9ca3af;
+    transition: all 0.3s ease;
+}
+
+.option-content span {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #374151;
+    transition: all 0.3s ease;
+}
+
+.result-option:hover .option-content {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(15, 23, 42, 0.12);
+}
+
+.win-option input:checked ~ .option-content {
+    background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+    border-color: #10b981;
+}
+
+.win-option input:checked ~ .option-content i {
+    color: #10b981;
+}
+
+.win-option input:checked ~ .option-content span {
+    color: #059669;
+}
+
+.lose-option input:checked ~ .option-content {
+    background: linear-gradient(135deg, #fef2f2, #fee2e2);
+    border-color: #ef4444;
+}
+
+.lose-option input:checked ~ .option-content i {
+    color: #ef4444;
+}
+
+.lose-option input:checked ~ .option-content span {
+    color: #dc2626;
+}
+
+#screenshotSection {
+    display: none;
+}
+
+#screenshotSection small {
+    color: #6b7280;
+}
+
+.required-text {
+    color: #ef4444;
+    font-weight: 600;
+}
+
+.match-stats {
+    background: #f8fafc;
+    padding: 1.25rem;
+    border-radius: 12px;
+    display: grid;
+    gap: 0.75rem;
+    margin: 1.5rem 0;
+}
+
+.match-stats .stat-item {
+    display: flex;
+    justify-content: space-between;
+    color: #475569;
+}
+
+.match-stats .text-success {
+    color: #10b981;
+}
+
+.alert-warning {
+    background: #fef3c7;
+    color: #92400e;
+    padding: 1rem;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+}
+
+@media (max-width: 680px) {
+    .result-card {
+        padding: 1.5rem;
+    }
+
+    .result-selection {
+        grid-template-columns: 1fr;
+    }
+
+    .option-content {
+        padding: 1.5rem;
+    }
+
+    .result-form-shell {
+        gap: 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .result-card h3 {
+        font-size: 1.2rem;
+    }
+
+    .option-content span {
+        font-size: 1rem;
+    }
+}
+</style>
+
+<script>
+const resultOptions = document.querySelectorAll('input[name="result_claim"]');
+const screenshotSection = document.getElementById('screenshotSection');
+const screenshotInput = document.getElementById('screenshot');
+
+resultOptions.forEach(option => {
+    option.addEventListener('change', function() {
+        if (this.value === 'win') {
+            screenshotSection.style.display = 'block';
+            screenshotInput.setAttribute('required', 'required');
+        } else {
+            screenshotSection.style.display = 'none';
+            screenshotInput.removeAttribute('required');
+            screenshotInput.value = '';
+        }
+    });
+});
+
+document.getElementById('resultForm').addEventListener('submit', function(e) {
+    const resultClaim = document.querySelector('input[name="result_claim"]:checked');
+    const screenshot = document.getElementById('screenshot');
+
+    if (!resultClaim) {
+        e.preventDefault();
+        alert('Please select your result (Win or Lose)');
+        return;
+    }
+
+    if (resultClaim.value === 'win' && !screenshot.files.length) {
+        e.preventDefault();
+        alert('Screenshot is required when claiming a win. Please upload proof of your victory.');
+        return;
+    }
+});
+</script>
+{% endblock %}

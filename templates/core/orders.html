@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+
+{% block title %}My Orders - IGS OP{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="container">
+        <h1><i class="fas fa-shopping-bag"></i> MY ORDERS</h1>
+        <p>Track your item purchases</p>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <div class="orders-list">
+            {% for order in orders %}
+                <div class="order-card">
+                    <div class="order-header">
+                        <div>
+                            <h3>Order #{{ order.order_id }}</h3>
+                            <p class="order-date">{{ order.created_at|date:"M d, Y H:i" }}</p>
+                        </div>
+                        <span class="status-badge 
+                            {% if order.status == 'pending' %}bg-warning
+                            {% elif order.status == 'processing' %}bg-info
+                            {% elif order.status == 'completed' %}bg-success
+                            {% else %}bg-danger{% endif %}">
+                            {{ order.get_status_display|upper }}
+                        </span>
+                    </div>
+                    
+                    <div class="order-item">
+                        {% if order.item.image %}
+                            <img src="{{ order.item.image.url }}" alt="{{ order.item.name }}" class="order-image">
+                        {% else %}
+                            <div class="order-image order-placeholder">
+                                <i class="fas fa-gem"></i>
+                            </div>
+                        {% endif %}
+                        
+                        <div class="order-details">
+                            <h4>{{ order.item.name }}</h4>
+                            <p>{{ order.item.get_item_type_display }}</p>
+                            
+                            <div class="order-info">
+                                <div class="info-item">
+                                    <i class="fas fa-gamepad"></i> In-Game ID: <strong>{{ order.in_game_id }}</strong>
+                                </div>
+                                {% if order.in_game_name %}
+                                    <div class="info-item">
+                                        <i class="fas fa-user"></i> Name: {{ order.in_game_name }}
+                                    </div>
+                                {% endif %}
+                                <div class="info-item">
+                                    <i class="fas fa-coins"></i> Paid: <strong>{{ order.total_price }} Coins</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {% if order.admin_notes %}
+                        <div class="alert alert-info">
+                            <i class="fas fa-comment"></i> <strong>Admin Note:</strong> {{ order.admin_notes }}
+                        </div>
+                    {% endif %}
+                    
+                    {% if order.status == 'completed' and order.completed_at %}
+                        <div class="alert alert-success">
+                            <i class="fas fa-check-circle"></i> Delivered on {{ order.completed_at|date:"M d, Y H:i" }}
+                        </div>
+                    {% endif %}
+                </div>
+            {% empty %}
+                <div class="empty-state">
+                    <i class="fas fa-shopping-bag"></i>
+                    <h3>No Orders Yet</h3>
+                    <p>Start shopping in our store!</p>
+                    <a href="{% url 'store' %}" class="btn btn-primary">
+                        <i class="fas fa-store"></i> Browse Store
+                    </a>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

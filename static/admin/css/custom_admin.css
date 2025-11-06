@@ -1,0 +1,710 @@
+/* Custom Admin Panel Styling - Modern UI/UX */
+
+/* Base Variables */
+:root {
+    --admin-primary: #0118D8;
+    --admin-secondary: #1B56FD;
+    --admin-light-blue: #bfdbfe;
+    --admin-lavender: #c7b8f5;
+    --admin-cream: #E9DFC3;
+    --admin-off-white: #FFF8F8;
+    --admin-text-dark: #1e293b;
+    --admin-text-light: #64748b;
+    --admin-border: rgba(1, 24, 216, 0.1);
+    --admin-card-bg: rgba(255, 255, 255, 0.95);
+    --admin-shadow: 0 4px 16px rgba(1, 24, 216, 0.1);
+}
+
+/* Body Background - Match main site */
+body {
+    font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+    background: linear-gradient(180deg, var(--admin-off-white) 0%, var(--admin-light-blue) 30%, var(--admin-lavender) 60%, #d8b4fe 100%) !important;
+    background-attachment: fixed !important;
+    color: var(--admin-text-dark) !important;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Admin Header - Modern Glassmorphism */
+#header {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    border-bottom: 2px solid var(--admin-border);
+    color: var(--admin-text-dark);
+    box-shadow: 0 2px 20px rgba(1, 24, 216, 0.08);
+    padding: 1rem 2rem;
+}
+
+#branding {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+#branding h1 {
+    color: var(--admin-primary);
+    font-weight: 800;
+    font-size: 1.75rem;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+#branding h1::before {
+    content: "🎮";
+    font-size: 2rem;
+}
+
+#branding h1 a:link,
+#branding h1 a:visited {
+    color: var(--admin-primary);
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+#branding h1 a:hover {
+    background: linear-gradient(135deg, var(--admin-primary), var(--admin-secondary));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    transform: scale(1.05);
+}
+
+/* Navigation */
+#nav-global a {
+    color: #FFF8F8;
+}
+
+#nav-global a:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Buttons */
+.button,
+input[type=submit],
+input[type=button],
+.submit-row input,
+a.button {
+    background: linear-gradient(135deg, #0118D8, #1B56FD);
+    border: none;
+    border-radius: 8px;
+    padding: 10px 20px;
+    color: white;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.button:hover,
+input[type=submit]:hover,
+input[type=button]:hover,
+.submit-row input:hover {
+    background: linear-gradient(135deg, #1B56FD, #0118D8);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(1, 24, 216, 0.3);
+}
+
+.button.default,
+input[type=submit].default,
+.submit-row input.default {
+    background: linear-gradient(135deg, #0118D8, #1B56FD);
+}
+
+/* Action buttons */
+.object-tools a {
+    background: linear-gradient(135deg, #0118D8, #1B56FD);
+    border-radius: 8px;
+}
+
+.object-tools a:hover {
+    background: linear-gradient(135deg, #1B56FD, #0118D8);
+}
+
+/* Module headers */
+.module h2, .module caption, .inline-group h2 {
+    background: linear-gradient(135deg, #bfdbfe, #c7b8f5);
+    color: #1e293b;
+    border-radius: 8px 8px 0 0;
+}
+
+/* Change list */
+#changelist {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 16px rgba(1, 24, 216, 0.08);
+}
+
+#changelist table {
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+#changelist thead th {
+    background: linear-gradient(135deg, #bfdbfe, #c7b8f5);
+    color: #1e293b;
+    font-weight: 600;
+}
+
+#changelist tbody tr:nth-child(even) {
+    background: #f9fafb;
+}
+
+#changelist tbody tr:hover {
+    background: rgba(1, 24, 216, 0.05);
+}
+
+/* Forms */
+.form-row {
+    border-bottom: 1px solid #e5e7eb;
+    padding: 15px 10px;
+}
+
+.form-row:last-child {
+    border-bottom: none;
+}
+
+/* Fieldsets */
+.aligned .form-row label {
+    font-weight: 600;
+    color: #1e293b;
+}
+
+fieldset.module {
+    background: white;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+/* Filters */
+#changelist-filter {
+    background: white;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 15px;
+}
+
+#changelist-filter h2 {
+    background: linear-gradient(135deg, #bfdbfe, #c7b8f5);
+    color: #1e293b;
+    padding: 10px;
+    border-radius: 8px;
+    margin: 0 -15px 15px -15px;
+}
+
+#changelist-filter h3 {
+    color: #0118D8;
+    font-weight: 600;
+}
+
+/* Messages */
+.messagelist li {
+    border-radius: 8px;
+    padding: 15px 20px;
+}
+
+.messagelist .success {
+    background: #d1fae5;
+    color: #065f46;
+    border-left: 4px solid #10b981;
+}
+
+.messagelist .warning {
+    background: #fef3c7;
+    color: #92400e;
+    border-left: 4px solid #f59e0b;
+}
+
+.messagelist .error {
+    background: #fee2e2;
+    color: #991b1b;
+    border-left: 4px solid #ef4444;
+}
+
+.messagelist .info {
+    background: #dbeafe;
+    color: #1e3a8a;
+    border-left: 4px solid #3b82f6;
+}
+
+/* Breadcrumbs */
+.breadcrumbs {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 8px;
+    padding: 15px 20px;
+}
+
+.breadcrumbs a {
+    color: #0118D8;
+}
+
+.breadcrumbs a:hover {
+    color: #1B56FD;
+}
+
+/* Dashboard modules */
+.module {
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.module table {
+    border-radius: 8px;
+}
+
+/* Action checkboxes */
+.action-checkbox {
+    accent-color: #0118D8;
+}
+
+/* Inline related objects */
+.inline-related h3 {
+    background: linear-gradient(135deg, #bfdbfe, #c7b8f5);
+    color: #1e293b;
+    border-radius: 8px;
+    padding: 10px 15px;
+}
+
+/* Submit row */
+.submit-row {
+    background: transparent;
+    padding: 20px;
+}
+
+/* Delete buttons */
+.deletelink, .deletelink-box {
+    background: #ef4444;
+    color: white;
+    border-radius: 8px;
+    padding: 8px 15px;
+}
+
+.deletelink:hover, .deletelink-box:hover {
+    background: #dc2626;
+}
+
+/* Card-like appearance for change forms */
+#content-main {
+    background: white;
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 4px 16px rgba(1, 24, 216, 0.08);
+}
+
+/* Pagination */
+.paginator {
+    color: #64748b;
+}
+
+.paginator a {
+    background: white;
+    border: 2px solid #e5e7eb;
+    border-radius: 6px;
+    padding: 5px 12px;
+    color: #0118D8;
+    margin: 0 2px;
+}
+
+.paginator a:hover {
+    background: rgba(1, 24, 216, 0.05);
+    border-color: #0118D8;
+}
+
+.paginator .this-page {
+    background: linear-gradient(135deg, #0118D8, #1B56FD);
+    color: white;
+    border-radius: 6px;
+    padding: 5px 12px;
+    font-weight: bold;
+}
+
+/* Error lists */
+.errorlist {
+    background: #fee2e2;
+    border-left: 4px solid #ef4444;
+    border-radius: 6px;
+    padding: 10px 15px;
+    color: #991b1b;
+}
+
+/* Help text */
+.help {
+    color: #64748b;
+    font-size: 0.875rem;
+}
+
+/* Image previews - ensure they display nicely */
+img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+}
+
+/* User Tools - Modern styling */
+#user-tools {
+    background: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(1, 24, 216, 0.1);
+    margin: 0.5rem 0;
+}
+
+#user-tools a {
+    color: var(--admin-primary);
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+#user-tools a:hover {
+    background: rgba(1, 24, 216, 0.08);
+    text-decoration: none;
+}
+
+/* Content Container */
+#content {
+    max-width: 1400px;
+    margin: 2rem auto;
+    padding: 0 2rem;
+}
+
+/* Dashboard Cards */
+#content-main > h1 {
+    color: var(--admin-primary);
+    font-size: 2rem;
+    font-weight: 800;
+    margin-bottom: 2rem;
+    text-align: center;
+    background: linear-gradient(135deg, var(--admin-primary), var(--admin-secondary));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* Module Styling */
+.module {
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 16px rgba(1, 24, 216, 0.08);
+    margin-bottom: 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.module:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(1, 24, 216, 0.15);
+}
+
+.module h2 {
+    background: linear-gradient(135deg, var(--admin-light-blue), var(--admin-lavender));
+    color: var(--admin-text-dark);
+    padding: 1rem 1.5rem;
+    margin: 0;
+    font-weight: 700;
+    border-radius: 16px 16px 0 0;
+}
+
+.module table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.module th {
+    background: linear-gradient(135deg, var(--admin-light-blue), var(--admin-lavender));
+    padding: 1rem;
+    text-align: left;
+    font-weight: 600;
+    color: var(--admin-text-dark);
+}
+
+.module td {
+    padding: 1rem;
+    border-bottom: 1px solid var(--admin-border);
+}
+
+.module tr:hover {
+    background: rgba(1, 24, 216, 0.03);
+}
+
+/* Results Table */
+#result_list {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+#result_list thead th {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: linear-gradient(135deg, var(--admin-light-blue), var(--admin-lavender)) !important;
+}
+
+#result_list tbody tr {
+    transition: all 0.2s ease;
+}
+
+#result_list tbody tr:hover {
+    background: rgba(1, 24, 216, 0.05);
+    transform: scale(1.01);
+}
+
+/* Login Page */
+.login {
+    background: transparent !important;
+}
+
+.login #container {
+    background: white;
+    border-radius: 20px;
+    padding: 3rem;
+    box-shadow: 0 8px 32px rgba(1, 24, 216, 0.15);
+    max-width: 450px;
+    margin: 5rem auto;
+    backdrop-filter: blur(20px);
+}
+
+.login #header {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+}
+
+.login #branding h1 {
+    text-align: center;
+    margin-bottom: 2rem;
+    font-size: 2.5rem;
+}
+
+.login form {
+    background: transparent;
+    border: none;
+    padding: 0;
+}
+
+.login .form-row {
+    margin-bottom: 1.5rem;
+}
+
+.login .form-row label {
+    color: var(--admin-text-dark);
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.login input[type="text"],
+.login input[type="password"] {
+    width: 100%;
+    padding: 0.875rem 1rem;
+    border: 2px solid var(--admin-border);
+    border-radius: 12px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: white;
+}
+
+.login input[type="text"]:focus,
+.login input[type="password"]:focus {
+    border-color: var(--admin-primary);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(1, 24, 216, 0.1);
+}
+
+.login .submit-row {
+    background: transparent;
+    padding: 0;
+    margin-top: 2rem;
+}
+
+.login input[type="submit"] {
+    width: 100%;
+    padding: 1rem;
+    font-size: 1.05rem;
+    border-radius: 12px;
+}
+
+/* Search Bar */
+#searchbar {
+    width: 100%;
+    max-width: 500px;
+}
+
+#searchbar input[type="text"] {
+    padding: 0.875rem 1rem;
+    border: 2px solid var(--admin-border);
+    border-radius: 12px;
+    font-size: 1rem;
+    width: 100%;
+    transition: all 0.3s ease;
+}
+
+#searchbar input[type="text"]:focus {
+    border-color: var(--admin-primary);
+    box-shadow: 0 0 0 3px rgba(1, 24, 216, 0.1);
+}
+
+/* Object Tools */
+.object-tools {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.object-tools li {
+    list-style: none;
+}
+
+.object-tools a {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    background: linear-gradient(135deg, var(--admin-primary), var(--admin-secondary));
+    color: white;
+    border-radius: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(1, 24, 216, 0.2);
+}
+
+.object-tools a:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(1, 24, 216, 0.3);
+}
+
+/* Stats Dashboard (Custom) */
+.dashboard-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+}
+
+.stat-card {
+    background: white;
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 16px rgba(1, 24, 216, 0.08);
+    transition: all 0.3s ease;
+    border: 2px solid var(--admin-border);
+}
+
+.stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(1, 24, 216, 0.15);
+    border-color: var(--admin-primary);
+}
+
+.stat-card h3 {
+    color: var(--admin-primary);
+    font-size: 2.5rem;
+    margin: 0.5rem 0;
+    font-weight: 800;
+}
+
+.stat-card p {
+    color: var(--admin-text-light);
+    font-size: 0.95rem;
+    margin: 0;
+}
+
+.stat-card .icon {
+    font-size: 2rem;
+    opacity: 0.3;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    #content {
+        padding: 0 1rem;
+    }
+    
+    #header {
+        padding: 1rem;
+    }
+    
+    .dashboard-stats {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+    }
+}
+
+@media (max-width: 768px) {
+    #branding h1 {
+        font-size: 1.5rem;
+    }
+    
+    .dashboard-stats {
+        grid-template-columns: 1fr;
+    }
+    
+    .login #container {
+        margin: 2rem auto;
+        padding: 2rem;
+    }
+    
+    .object-tools {
+        flex-direction: column;
+    }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(1, 24, 216, 0.05);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, var(--admin-primary), var(--admin-secondary));
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--admin-primary);
+}
+
+/* Smooth transitions */
+* {
+    transition-property: background-color, border-color, color, box-shadow, transform;
+    transition-duration: 0.2s;
+    transition-timing-function: ease;
+}
+
+/* Loading Animation */
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+.loading {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Success/Error Animations */
+.messagelist li {
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}

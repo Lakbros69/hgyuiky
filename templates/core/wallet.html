@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+
+{% block title %}Wallet - IGS OP{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="container">
+        <h1><i class="fas fa-wallet"></i> MY WALLET</h1>
+        <p>Manage your coins and transactions</p>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <!-- Balance Card -->
+        <div class="wallet-balance">
+            <div class="balance-card">
+                <div class="balance-icon">
+                    <i class="fas fa-coins"></i>
+                </div>
+                <div class="balance-info">
+                    <p>Available Balance</p>
+                    <h2>{{ user.coins }} <span>Coins</span></h2>
+                </div>
+            </div>
+            
+            <a href="{% url 'buy_coins' %}" class="btn btn-primary btn-lg">
+                <i class="fas fa-plus-circle"></i> Add Coins
+            </a>
+        </div>
+        
+        <!-- Pending Payments -->
+        {% if pending_payments %}
+            <div class="section-header">
+                <h2><i class="fas fa-clock"></i> Pending Payments</h2>
+            </div>
+            
+            <div class="payments-grid">
+                {% for payment in pending_payments %}
+                    <div class="payment-card pending">
+                        <div class="payment-header">
+                            <span class="payment-badge bg-warning">Pending Review</span>
+                            <span class="payment-date">{{ payment.created_at|date:"M d, Y" }}</span>
+                        </div>
+                        
+                        <div class="payment-details">
+                            <div class="payment-row">
+                                <strong>Coins:</strong>
+                                <span>{{ payment.coins_amount }}</span>
+                            </div>
+                            <div class="payment-row">
+                                <strong>Amount Paid:</strong>
+                                <span>Rs. {{ payment.payment_amount }}</span>
+                            </div>
+                            <div class="payment-row">
+                                <strong>Method:</strong>
+                                <span>{{ payment.payment_method }}</span>
+                            </div>
+                            {% if payment.transaction_id %}
+                                <div class="payment-row">
+                                    <strong>Transaction ID:</strong>
+                                    <span>{{ payment.transaction_id }}</span>
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        {% if payment.payment_screenshot %}
+                            <a href="{{ payment.payment_screenshot.url }}" target="_blank" class="btn btn-secondary btn-sm">
+                                <i class="fas fa-image"></i> View Screenshot
+                            </a>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        
+        <!-- Transaction History -->
+        <div class="section-header">
+            <h2><i class="fas fa-history"></i> Transaction History</h2>
+        </div>
+        
+        <div class="transactions-list">
+            {% for transaction in transactions %}
+                <div class="transaction-item">
+                    <div class="transaction-icon {% if transaction.amount > 0 %}positive{% else %}negative{% endif %}">
+                        {% if transaction.transaction_type == 'deposit' %}
+                            <i class="fas fa-arrow-down"></i>
+                        {% elif transaction.transaction_type == 'tournament_win' %}
+                            <i class="fas fa-trophy"></i>
+                        {% elif transaction.transaction_type == 'referral_bonus' %}
+                            <i class="fas fa-gift"></i>
+                        {% else %}
+                            <i class="fas fa-arrow-up"></i>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="transaction-info">
+                        <h4>{{ transaction.get_transaction_type_display }}</h4>
+                        <p>{{ transaction.description }}</p>
+                        <small>{{ transaction.created_at|date:"M d, Y H:i" }}</small>
+                    </div>
+                    
+                    <div class="transaction-amount {% if transaction.amount > 0 %}positive{% else %}negative{% endif %}">
+                        {% if transaction.amount > 0 %}+{% endif %}{{ transaction.amount }}
+                        <small>Balance: {{ transaction.balance_after }}</small>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="empty-state">
+                    <i class="fas fa-history"></i>
+                    <p>No transactions yet</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

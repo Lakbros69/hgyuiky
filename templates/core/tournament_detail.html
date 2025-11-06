@@ -1,0 +1,265 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ tournament.title }} - IGS OP{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="container">
+        <a href="{% url 'tournaments' %}" class="back-link">
+            <i class="fas fa-arrow-left"></i> Back to Tournaments
+        </a>
+        <h1>{{ tournament.title }}</h1>
+        <span class="game-badge large {% if tournament.game == 'freefire' %}bg-orange{% else %}bg-blue{% endif %}">
+            {{ tournament.get_game_display }}
+        </span>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <div class="detail-grid">
+            <!-- Tournament Details -->
+            <div class="detail-main">
+                {% if tournament.image %}
+                    <img src="{{ tournament.image.url }}" alt="{{ tournament.title }}" class="detail-image">
+                {% else %}
+                    {% if tournament.game == 'freefire' %}
+                        <img src="{% static 'images/freefire-icon.png' %}" alt="Free Fire" class="detail-image default-game-icon">
+                    {% elif tournament.game == 'pubg' %}
+                        <img src="{% static 'images/pubg-icon.png' %}" alt="PUBG" class="detail-image default-game-icon">
+                    {% else %}
+                        <div class="detail-image detail-placeholder">
+                            <i class="fas fa-trophy"></i>
+                        </div>
+                    {% endif %}
+                {% endif %}
+                
+                <div class="detail-card">
+                    <h2><i class="fas fa-info-circle"></i> Tournament Details</h2>
+                    <p>{{ tournament.description }}</p>
+                    
+                    <!-- Live Countdown Timer -->
+                    {% if tournament.status == 'upcoming' %}
+                    <div id="countdown-container" style="background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: white; padding: 1.5rem; border-radius: 12px; margin-bottom: 1.5rem; text-align: center;">
+                        <div style="font-size: 0.9rem; margin-bottom: 0.5rem; opacity: 0.9;">
+                            <i class="fas fa-clock"></i> MATCH STARTS IN
+                        </div>
+                        <div id="countdown-timer" style="font-size: 2rem; font-weight: 700; font-family: monospace; letter-spacing: 2px;">
+                            Loading...
+                        </div>
+                        <div id="countdown-date" style="font-size: 0.85rem; margin-top: 0.5rem; opacity: 0.8;">
+                            {{ tournament.tournament_date|date:"F d, Y - h:i A" }}
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="detail-info">
+                        <div class="info-row">
+                            <strong><i class="fas fa-calendar"></i> Date & Time:</strong>
+                            <span>{{ tournament.tournament_date|date:"F d, Y - H:i" }}</span>
+                        </div>
+                        <div class="info-row">
+                            <strong><i class="fas fa-coins"></i> Entry Fee:</strong>
+                            <span>{{ tournament.entry_fee }} Coins</span>
+                        </div>
+                        <div class="info-row">
+                            <strong><i class="fas fa-trophy"></i> Prize Pool:</strong>
+                            <span>{{ tournament.prize_pool }} Coins</span>
+                        </div>
+                        <div class="info-row">
+                            <strong><i class="fas fa-users"></i> Participants:</strong>
+                            <span>{{ tournament.current_participants }}/{{ tournament.max_participants }}</span>
+                        </div>
+                        <div class="info-row">
+                            <strong><i class="fas fa-chart-bar"></i> Status:</strong>
+                            <span class="status-badge bg-green">{{ tournament.status|upper }}</span>
+                        </div>
+                    </div>
+                    
+                    {% if user.is_authenticated %}
+                        {% if user_joined %}
+                            <div class="alert alert-success">
+                                <i class="fas fa-check-circle"></i> You have joined this tournament!
+                            </div>
+                            
+                            <!-- Result Submission Section -->
+                            {% if match_ended and tournament.status == 'upcoming' %}
+                                {% if user_result %}
+                                    <div class="alert alert-info" style="margin-top: 1rem;">
+                                        <i class="fas fa-flag-checkered"></i> 
+                                        You submitted: <strong>{{ user_result.get_result_claim_display }}</strong>
+                                        {% if opponent_result %}
+                                            <br>Opponent submitted: <strong>{{ opponent_result.get_result_claim_display }}</strong>
+                                            <br><small>Results are being processed...</small>
+                                        {% else %}
+                                            <br><small>⏱️ Waiting for opponent to submit result...</small>
+                                            <br><small style="color: #f59e0b; font-weight: 600;">Opponent has 10 minutes to submit or you may win by default</small>
+                                        {% endif %}
+                                    </div>
+                                {% else %}
+                                    <div class="alert alert-warning" style="margin-top: 1rem; background: #fef3c7; color: #92400e;">
+                                        <i class="fas fa-exclamation-triangle"></i> 
+                                        <strong>Action Required!</strong> Submit your match result.
+                                        {% if tournament.first_result_submitted_at %}
+                                            <br><small>⏱️ Your opponent has already submitted. You have 10 minutes to submit!</small>
+                                        {% endif %}
+                                    </div>
+                                    {% if is_full_tournament %}
+                                        <a href="{% url 'submit_full_tournament_result' tournament.pk %}" class="btn btn-warning btn-lg btn-block" style="margin-top: 1rem;">
+                                            <i class="fas fa-flag-checkered"></i> Submit Match Result
+                                        </a>
+                                    {% else %}
+                                        <a href="{% url 'submit_tournament_result' tournament.pk %}" class="btn btn-warning btn-lg btn-block" style="margin-top: 1rem;">
+                                            <i class="fas fa-flag-checkered"></i> Submit Match Result
+                                        </a>
+                                    {% endif %}
+                                {% endif %}
+                            {% endif %}
+                            
+                            {% if tournament.room_id and tournament.room_password %}
+                                <a href="{% url 'tournament_room_details' tournament.pk %}" class="btn btn-success btn-lg btn-block" style="margin-top: 1rem;">
+                                    <i class="fas fa-door-open"></i> View Room Details
+                                </a>
+                            {% elif tournament.creator == user and tournament.current_participants >= 2 %}
+                                <a href="{% url 'set_room_details' tournament.pk %}" class="btn btn-primary btn-lg btn-block" style="margin-top: 1rem;">
+                                    <i class="fas fa-plus-circle"></i> Set Room Details
+                                </a>
+                            {% endif %}
+                        {% elif tournament.is_joinable %}
+                            {% if is_full_tournament %}
+                                <a href="{% url 'full_tournament_join' tournament.pk %}" class="btn btn-primary btn-lg btn-block">
+                                    <i class="fas fa-plus-circle"></i> Join Tournament ({{ tournament.entry_fee }} Coins)
+                                </a>
+                            {% else %}
+                                <a href="{% url 'tournament_join' tournament.pk %}" class="btn btn-primary btn-lg btn-block">
+                                    <i class="fas fa-plus-circle"></i> Join Tournament ({{ tournament.entry_fee }} Coins)
+                                </a>
+                            {% endif %}
+                        {% elif tournament.is_full %}
+                            <div class="alert alert-warning">
+                                <i class="fas fa-users"></i> Tournament is full
+                            </div>
+                        {% else %}
+                            <div class="alert alert-warning">
+                                <i class="fas fa-times-circle"></i> Registration closed
+                            </div>
+                        {% endif %}
+                    {% else %}
+                        <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-primary btn-lg btn-block">
+                            <i class="fas fa-sign-in-alt"></i> Login to Join
+                        </a>
+                    {% endif %}
+                </div>
+                {% if tournament.room_id and tournament.room_password %}
+                    <div class="room-details-card">
+                        <div>
+                            <strong>Room ID:</strong> {{ tournament.room_id }}
+                        </div>
+                        <div>
+                            <strong>Password:</strong> {{ tournament.room_password }}
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+            
+            <!-- Participants Sidebar -->
+            <div class="detail-sidebar">
+                <div class="detail-card">
+                    <h3><i class="fas fa-users"></i> Participants ({{ participants.count }})</h3>
+                    
+                    <div class="participants-list">
+                        {% for participant in participants %}
+                            <div class="participant-item">
+                                <div class="participant-info">
+                                    {% if participant.user.avatar %}
+                                        <img src="{{ participant.user.avatar.url }}" alt="{{ participant.user.username }}" class="participant-avatar">
+                                    {% else %}
+                                        <div class="participant-avatar">
+                                            <i class="fas fa-user"></i>
+                                        </div>
+                                    {% endif %}
+                                    <div>
+                                        <strong>{{ participant.user.username }}</strong>
+                                        <small>{{ participant.in_game_name }}</small>
+                                    </div>
+                                </div>
+                                {% if participant.position %}
+                                    <span class="position-badge">
+                                        <i class="fas fa-medal"></i> #{{ participant.position }}
+                                    </span>
+                                {% endif %}
+                            </div>
+                        {% empty %}
+                            <p class="text-muted">No participants yet</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+// Live Countdown Timer
+function startCountdown() {
+    const countdownTimer = document.getElementById('countdown-timer');
+    const countdownContainer = document.getElementById('countdown-container');
+    
+    if (!countdownTimer) return;
+    
+    // Tournament date from Django (format: YYYY-MM-DD HH:MM:SS)
+    const tournamentDateStr = "{{ tournament.tournament_date|date:'Y-m-d H:i:s' }}";
+    const tournamentDate = new Date(tournamentDateStr.replace(' ', 'T'));
+    
+    function updateCountdown() {
+        const now = new Date();
+        const timeLeft = tournamentDate - now;
+        
+        if (timeLeft <= 0) {
+            countdownTimer.innerHTML = '<span style="color: #4ade80;">🎮 MATCH STARTED!</span>';
+            countdownContainer.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+            return;
+        }
+        
+        // Calculate time units
+        const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+        
+        // Format display
+        let display = '';
+        if (days > 0) {
+            display = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+        } else if (hours > 0) {
+            display = `${hours}h ${minutes}m ${seconds}s`;
+        } else if (minutes > 0) {
+            display = `${minutes}m ${seconds}s`;
+        } else {
+            display = `${seconds}s`;
+            // Change color when less than 1 minute
+            countdownContainer.style.background = 'linear-gradient(135deg, #f59e0b, #ef4444)';
+        }
+        
+        // Change color when less than 5 minutes (notification time)
+        if (timeLeft <= 5 * 60 * 1000 && timeLeft > 60 * 1000) {
+            countdownContainer.style.background = 'linear-gradient(135deg, #f59e0b, #d97706)';
+        }
+        
+        countdownTimer.textContent = display;
+    }
+    
+    // Update immediately and then every second
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
+}
+
+// Start countdown when page loads
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', startCountdown);
+} else {
+    startCountdown();
+}
+</script>
+{% endblock %}

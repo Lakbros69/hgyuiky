@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ game_info.title }} - Store{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="container">
+        <a href="{% url 'store' %}" class="back-link">
+            <i class="fas fa-arrow-left"></i> Back to Store
+        </a>
+        <h1><i class="fas fa-{{ game_info.icon }}"></i> {{ game_info.title }}</h1>
+        <p>Select your desired package</p>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <!-- Store Items Grid -->
+        <div class="game-store-grid">
+            {% for item in items %}
+                <a href="{% url 'store_item_detail' item.pk %}" class="game-store-card">
+                    <div class="game-card-image">
+                        {% if item.image %}
+                            <img src="{{ item.image.url }}" alt="{{ item.name }}">
+                        {% else %}
+                            <div class="game-card-placeholder">
+                                <i class="fas fa-gem fa-4x"></i>
+                            </div>
+                        {% endif %}
+                        {% if item.featured %}
+                            <div class="featured-badge-new">
+                                <i class="fas fa-star"></i>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="game-card-info">
+                        <h3 class="game-card-title">{{ item.name }}</h3>
+                        <p class="game-card-provider"><i class="fas fa-coins"></i> {{ item.price }} Points</p>
+                    </div>
+                </a>
+            {% empty %}
+                <div class="empty-state">
+                    <i class="fas fa-store-slash"></i>
+                    <h3>No Items Available</h3>
+                    <p>Check back later for new items!</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

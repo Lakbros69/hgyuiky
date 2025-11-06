@@ -1,0 +1,181 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Select Game - Create Tournament{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <div class="form-container">
+            <div class="form-card">
+                <div style="text-align: center; margin-bottom: 2rem;">
+                    <i class="fas fa-trophy" style="font-size: 3rem; color: var(--primary-color); margin-bottom: 1rem;"></i>
+                    <h1 style="font-size: 2rem; margin-bottom: 0.5rem; color: var(--text-primary);">Create Match Room</h1>
+                    <p style="color: var(--text-secondary); font-size: 1rem;">Select your game to create a tournament</p>
+                </div>
+
+                <div class="game-selection-desktop">
+                    <a href="{% url 'create_tournament' 'freefire' %}" class="game-card-desktop">
+                        <div class="game-icon-desktop">
+                            <img src="{% static 'images/freefire-icon.png' %}" alt="FreeFire" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <div class="game-icon-fallback-desktop" style="display:none;">
+                                <i class="fas fa-fire"></i>
+                            </div>
+                        </div>
+                        <h3>Free Fire</h3>
+                        <p>Create 1v1 Free Fire tournament</p>
+                        <div class="arrow-icon">
+                            <i class="fas fa-arrow-right"></i>
+                        </div>
+                    </a>
+
+                    <a href="{% url 'create_tournament' 'pubg' %}" class="game-card-desktop">
+                        <div class="game-icon-desktop">
+                            <img src="{% static 'images/pubg-icon.png' %}" alt="PUBG" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <div class="game-icon-fallback-desktop" style="display:none;">
+                                <i class="fas fa-crosshairs"></i>
+                            </div>
+                        </div>
+                        <h3>PUBG Mobile</h3>
+                        <p>Create 1v1 PUBG tournament</p>
+                        <div class="arrow-icon">
+                            <i class="fas fa-arrow-right"></i>
+                        </div>
+                    </a>
+                </div>
+
+                <div style="text-align: center; margin-top: 2rem;">
+                    <a href="{% url 'tournaments' %}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Back to Tournaments
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+.game-selection-desktop {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+}
+
+.game-card-desktop {
+    background: white;
+    border: 3px solid var(--border-color);
+    border-radius: 20px;
+    padding: 2rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    text-decoration: none;
+    color: var(--text-primary);
+    position: relative;
+    overflow: hidden;
+}
+
+.game-card-desktop::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(1, 24, 216, 0.02), rgba(167, 139, 250, 0.02));
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.game-card-desktop:hover::before {
+    opacity: 1;
+}
+
+.game-card-desktop:hover {
+    transform: translateY(-10px);
+    border-color: var(--primary-color);
+    box-shadow: 0 15px 40px var(--glow-primary);
+}
+
+.game-icon-desktop {
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 1.5rem;
+    border-radius: 20px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    z-index: 1;
+}
+
+.game-icon-desktop img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.game-icon-fallback-desktop {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 3.5rem;
+}
+
+.game-card-desktop h3 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    position: relative;
+    z-index: 1;
+}
+
+.game-card-desktop p {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    position: relative;
+    z-index: 1;
+}
+
+.arrow-icon {
+    margin-top: 1.5rem;
+    font-size: 1.5rem;
+    color: var(--primary-color);
+    opacity: 0;
+    transform: translateX(-10px);
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 1;
+}
+
+.game-card-desktop:hover .arrow-icon {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+@media (max-width: 768px) {
+    .game-selection-desktop {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .game-icon-desktop {
+        width: 100px;
+        height: 100px;
+    }
+    
+    .game-card-desktop h3 {
+        font-size: 1.25rem;
+    }
+}
+</style>
+{% endblock %}
+

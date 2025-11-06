@@ -1,0 +1,201 @@
+{% extends 'custom_admin/base.html' %}
+
+{% block title %}Delete Tournament - {{ tournament.title }}{% endblock %}
+
+{% block content %}
+<div class="admin-header">
+    <h1>Delete Tournament</h1>
+    <p>Are you sure you want to delete this tournament?</p>
+</div>
+
+<div class="admin-card">
+    <div class="card-header">
+        <h2>Tournament Details</h2>
+        <span class="badge badge-danger">
+            <i class="fas fa-exclamation-triangle"></i> Deletion Warning
+        </span>
+    </div>
+    
+    <div class="card-body">
+        <div class="tournament-info">
+            <div class="info-grid">
+                <div class="info-item">
+                    <strong>Title:</strong> {{ tournament.title }}
+                </div>
+                <div class="info-item">
+                    <strong>Match ID:</strong> {{ tournament.matchroom_id }}
+                </div>
+                <div class="info-item">
+                    <strong>Game:</strong> {{ tournament.get_game_display }}
+                </div>
+                <div class="info-item">
+                    <strong>Team Type:</strong> {{ tournament.get_team_type_display }}
+                </div>
+                <div class="info-item">
+                    <strong>Status:</strong> {{ tournament.get_status_display }}
+                </div>
+                <div class="info-item">
+                    <strong>Participants:</strong> {{ tournament.current_participants }}/{{ tournament.max_players }}
+                </div>
+                <div class="info-item">
+                    <strong>Entry Fee:</strong> {{ tournament.entry_fee }} points
+                </div>
+                <div class="info-item">
+                    <strong>Game Time:</strong> {{ tournament.game_time|date:"M d, Y g:i A" }}
+                </div>
+            </div>
+        </div>
+
+        {% if tournament.current_participants > 0 %}
+            <div class="alert alert-warning">
+                <i class="fas fa-users"></i>
+                <strong>{{ tournament.current_participants }} participant{{ tournament.current_participants|pluralize }} will be affected:</strong>
+                <ul class="participant-list">
+                    {% for participant in tournament.full_participants.all %}
+                        <li>{{ participant.user.username }} ({{ participant.gamer_tag }})
+                            {% if tournament.entry_fee > 0 %}
+                                - Will receive {{ tournament.entry_fee }} points refund
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+
+        <div class="alert alert-danger">
+            <i class="fas fa-exclamation-triangle"></i>
+            <strong>This action cannot be undone!</strong>
+            <ul>
+                <li>The tournament will be permanently deleted</li>
+                {% if tournament.current_participants > 0 %}
+                    <li>All {{ tournament.current_participants }} participant{{ tournament.current_participants|pluralize }} will be refunded</li>
+                    <li>Participants will receive notifications about the cancellation</li>
+                {% endif %}
+                <li>All tournament data will be lost</li>
+            </ul>
+        </div>
+
+        <form method="post" class="delete-form">
+            {% csrf_token %}
+            
+            <div class="button-group">
+                <button type="submit" class="btn btn-danger">
+                    <i class="fas fa-trash"></i>
+                    Yes, Delete Tournament
+                </button>
+                <a href="{% url 'custom_admin:full_tournaments' %}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i>
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+.tournament-info {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 0.75rem;
+}
+
+.info-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.info-item:last-child {
+    border-bottom: none;
+}
+
+.participant-list {
+    margin: 0.5rem 0 0 1rem;
+    padding: 0;
+}
+
+.participant-list li {
+    margin-bottom: 0.25rem;
+}
+
+.delete-form {
+    margin-top: 2rem;
+}
+
+.button-group {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+
+.btn-danger {
+    background: #dc2626;
+    color: white;
+    border: 2px solid #dc2626;
+}
+
+.btn-danger:hover {
+    background: #b91c1c;
+    border-color: #b91c1c;
+}
+
+.alert {
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+}
+
+.alert-warning {
+    background: #fef3c7;
+    border: 1px solid #f59e0b;
+    color: #92400e;
+}
+
+.alert-danger {
+    background: #fee2e2;
+    border: 1px solid #dc2626;
+    color: #991b1b;
+}
+
+.alert ul {
+    margin: 0.5rem 0 0 0;
+    padding-left: 1rem;
+}
+
+.alert li {
+    margin-bottom: 0.25rem;
+}
+
+.badge-danger {
+    background: #dc2626;
+    color: white;
+}
+
+@media (max-width: 768px) {
+    .info-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .button-group {
+        flex-direction: column;
+    }
+    
+    .btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+</style>
+{% endblock %}

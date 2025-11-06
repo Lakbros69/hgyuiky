@@ -1,0 +1,338 @@
+{% extends 'base.html' %}
+
+{% block title %}Request Withdrawal - IGS OP{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="withdrawal-container">
+        <div class="withdrawal-header">
+            <h1><i class="fas fa-money-bill-wave"></i> Request Withdrawal</h1>
+            <p>Convert your points to real money</p>
+        </div>
+
+        <div class="withdrawal-content">
+            <div class="balance-card">
+                <div class="balance-info">
+                    <div class="balance-icon">
+                        <i class="fas fa-coins"></i>
+                    </div>
+                    <div class="balance-details">
+                        <h3>Current Balance</h3>
+                        <div class="balance-amount">{{ user_balance }} Points</div>
+                        <small>Minimum withdrawal: 10 points</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="withdrawal-form-card">
+                <h3><i class="fas fa-file-alt"></i> Withdrawal Request Form</h3>
+                
+                <form method="post" enctype="multipart/form-data" class="withdrawal-form">
+                    {% csrf_token %}
+                    
+                    <div class="form-group">
+                        <label for="{{ form.amount.id_for_label }}">
+                            <i class="fas fa-coins"></i> Amount to Withdraw
+                        </label>
+                        {{ form.amount }}
+                        {% if form.amount.errors %}
+                            <div class="error-message">{{ form.amount.errors.0 }}</div>
+                        {% endif %}
+                        <small class="form-help">Enter the amount you want to withdraw (minimum 10 points)</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="{{ form.payment_method.id_for_label }}">
+                            <i class="fas fa-credit-card"></i> Payment Method
+                        </label>
+                        {{ form.payment_method }}
+                        {% if form.payment_method.errors %}
+                            <div class="error-message">{{ form.payment_method.errors.0 }}</div>
+                        {% endif %}
+                        <small class="form-help">e.g., eSewa, Khalti, Bank Account, etc.</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="{{ form.account_details.id_for_label }}">
+                            <i class="fas fa-user"></i> Account Details
+                        </label>
+                        {{ form.account_details }}
+                        {% if form.account_details.errors %}
+                            <div class="error-message">{{ form.account_details.errors.0 }}</div>
+                        {% endif %}
+                        <small class="form-help">Provide your account number, name, or other relevant details</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="{{ form.payment_qr.id_for_label }}">
+                            <i class="fas fa-qrcode"></i> Payment QR Code
+                        </label>
+                        {{ form.payment_qr }}
+                        {% if form.payment_qr.errors %}
+                            <div class="error-message">{{ form.payment_qr.errors.0 }}</div>
+                        {% endif %}
+                        <small class="form-help">Upload a screenshot of your payment QR code (eSewa, Khalti, etc.)</small>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="fas fa-paper-plane"></i> Submit Withdrawal Request
+                        </button>
+                        <a href="{% url 'profile' %}" class="btn btn-secondary btn-lg">
+                            <i class="fas fa-arrow-left"></i> Back to Profile
+                        </a>
+                    </div>
+                </form>
+            </div>
+
+            <div class="info-card">
+                <h4><i class="fas fa-info-circle"></i> Important Information</h4>
+                <ul class="info-list">
+                    <li><i class="fas fa-clock"></i> Withdrawal requests are processed within 24-48 hours</li>
+                    <li><i class="fas fa-shield-alt"></i> Points will be deducted immediately upon request submission</li>
+                    <li><i class="fas fa-check-circle"></i> You'll receive a notification once your request is processed</li>
+                    <li><i class="fas fa-ban"></i> Rejected requests will have points refunded to your account</li>
+                    <li><i class="fas fa-coins"></i> Minimum withdrawal amount is 10 points</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.withdrawal-container {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+.withdrawal-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.withdrawal-header h1 {
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+    font-size: 2.5rem;
+    font-weight: 700;
+}
+
+.withdrawal-header p {
+    color: var(--text-muted);
+    font-size: 1.1rem;
+}
+
+.withdrawal-content {
+    display: grid;
+    gap: 2rem;
+}
+
+.balance-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 16px;
+    padding: 2rem;
+    color: white;
+    box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);
+}
+
+.balance-info {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.balance-icon {
+    width: 80px;
+    height: 80px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    backdrop-filter: blur(10px);
+}
+
+.balance-details h3 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.2rem;
+    opacity: 0.9;
+}
+
+.balance-amount {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+}
+
+.balance-details small {
+    opacity: 0.8;
+    font-size: 0.9rem;
+}
+
+.withdrawal-form-card, .info-card {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid #f1f5f9;
+}
+
+.withdrawal-form-card h3 {
+    color: var(--text-primary);
+    margin-bottom: 2rem;
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.form-group {
+    margin-bottom: 2rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.75rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 1rem;
+}
+
+.form-group label i {
+    color: var(--primary-color);
+    margin-right: 0.5rem;
+    width: 20px;
+}
+
+.form-control {
+    width: 100%;
+    padding: 1rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: #f8fafc;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    background: white;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.form-help {
+    display: block;
+    margin-top: 0.5rem;
+    color: var(--text-muted);
+    font-size: 0.875rem;
+}
+
+.error-message {
+    color: #ef4444;
+    font-size: 0.875rem;
+    margin-top: 0.5rem;
+    font-weight: 500;
+}
+
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.btn {
+    padding: 1rem 2rem;
+    border: none;
+    border-radius: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 1rem;
+    flex: 1;
+    justify-content: center;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+}
+
+.btn-secondary {
+    background: #6b7280;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background: #4b5563;
+    transform: translateY(-2px);
+}
+
+.info-card h4 {
+    color: var(--text-primary);
+    margin-bottom: 1.5rem;
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+
+.info-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.info-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 0.75rem 0;
+    color: var(--text-muted);
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.info-list li:last-child {
+    border-bottom: none;
+}
+
+.info-list i {
+    color: var(--primary-color);
+    margin-top: 0.125rem;
+    width: 16px;
+    flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+    .withdrawal-header h1 {
+        font-size: 2rem;
+    }
+    
+    .balance-info {
+        flex-direction: column;
+        text-align: center;
+        gap: 1rem;
+    }
+    
+    .balance-amount {
+        font-size: 2rem;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+    }
+    
+    .withdrawal-form-card, .info-card {
+        padding: 1.5rem;
+    }
+}
+</style>
+{% endblock %}

@@ -1,0 +1,140 @@
+{% extends 'custom_admin/base.html' %}
+{% load static %}
+
+{% block title %}Order Management{% endblock %}
+{% block page_title %}Orders{% endblock %}
+
+{% block content %}
+<!-- Filter Tabs -->
+<div class="filter-tabs">
+    <a href="?status=pending" class="filter-tab {% if status_filter == 'pending' %}active{% endif %}">
+        Pending ({{ pending_count }})
+    </a>
+    <a href="?status=processing" class="filter-tab {% if status_filter == 'processing' %}active{% endif %}">
+        Processing
+    </a>
+    <a href="?status=completed" class="filter-tab {% if status_filter == 'completed' %}active{% endif %}">
+        Completed
+    </a>
+    <a href="?status=cancelled" class="filter-tab {% if status_filter == 'cancelled' %}active{% endif %}">
+        Cancelled
+    </a>
+</div>
+
+<!-- Orders List -->
+<div class="data-table-container">
+    {% if orders %}
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Order ID</th>
+                <th>User</th>
+                <th>Item</th>
+                <th>Price</th>
+                <th>In-Game ID</th>
+                <th>Status</th>
+                <th>Date</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for order in orders %}
+            <tr>
+                <td data-label="Order ID"><strong>{{ order.order_id }}</strong></td>
+                <td data-label="User">
+                    <div class="user-cell">
+                        <strong>{{ order.user.username }}</strong>
+                        <span>{{ order.user.email }}</span>
+                    </div>
+                </td>
+                <td data-label="Item">
+                    <div class="item-meta-row">
+                        {% if order.item.image %}
+                        <img src="{{ order.item.image.url }}" alt="{{ order.item.name }}" class="item-thumb">
+                        {% endif %}
+                        <span>{{ order.item.name }}</span>
+                    </div>
+                </td>
+                <td data-label="Price"><strong>{{ order.total_price }} coins</strong></td>
+                <td data-label="In-Game ID"><code>{{ order.in_game_id }}</code></td>
+                <td data-label="Status">
+                    <span class="badge badge-{{ order.status }}">{{ order.get_status_display }}</span>
+                </td>
+                <td data-label="Date">{{ order.created_at|date:"M d, Y" }}</td>
+                <td data-label="Actions">
+                    {% if order.status != 'completed' and order.status != 'cancelled' %}
+                    <button class="btn-action" type="button" data-update-url="{% url 'custom_admin:update_order' order.id %}" onclick="openOrderModal(this)">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    {% else %}
+                    <span class="text-muted">-</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="empty-state-large">
+        <i class="fas fa-shopping-bag"></i>
+        <h3>No orders</h3>
+        <p>There are no {{ status_filter }} orders at the moment.</p>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Order Update Modal -->
+<div id="orderModal" class="modal">
+    <div class="modal-content">
+        <h3>Update Order</h3>
+        <form method="post" id="orderForm">
+            {% csrf_token %}
+            <input type="hidden" name="order_id" id="orderId">
+            
+            <div class="form-group">
+                <label>Status</label>
+                <select name="status" required class="form-input">
+                    <option value="processing">Processing</option>
+                    <option value="completed">Completed</option>
+                    <option value="cancelled">Cancelled</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Admin Notes</label>
+                <textarea name="admin_notes" class="form-input" rows="3" placeholder="Optional notes..."></textarea>
+            </div>
+            
+            <div class="modal-actions">
+                <button type="button" onclick="closeOrderModal()" class="btn btn-secondary">Cancel</button>
+                <button type="submit" class="btn btn-primary">Update Order</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const orderModal = document.getElementById('orderModal');
+const orderForm = document.getElementById('orderForm');
+
+function openOrderModal(button) {
+    const updateUrl = button.getAttribute('data-update-url');
+    if (orderForm && updateUrl) {
+        orderForm.action = updateUrl;
+    }
+    orderModal?.classList.add('is-open');
+}
+
+function closeOrderModal() {
+    orderModal?.classList.remove('is-open');
+}
+
+window.addEventListener('click', function(event) {
+    if (event.target === orderModal) {
+        closeOrderModal();
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,115 @@
+{% extends 'custom_admin/base.html' %}
+{% load static %}
+
+{% block title %}User Management{% endblock %}
+{% block page_title %}Users{% endblock %}
+
+{% block content %}
+<!-- Search Bar -->
+<div class="search-section">
+    <form method="get" class="search-form">
+        <input type="text" name="search" placeholder="Search by username or email..." value="{{ search }}" class="search-input">
+        <button type="submit" class="search-btn"><i class="fas fa-search"></i> Search</button>
+    </form>
+    <p class="search-info">Total Users: <strong>{{ total_users }}</strong></p>
+</div>
+
+<!-- Users Table -->
+<div class="data-table-container">
+    {% if users %}
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Coins</th>
+                <th>Tournaments</th>
+                <th>Joined</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+            <tr>
+                <td data-label="Username"><strong>{{ user.username }}</strong></td>
+                <td data-label="Email">{{ user.email }}</td>
+                <td data-label="Coins"><span class="coin-badge">💰 {{ user.coins }}</span></td>
+                <td data-label="Tournaments">{{ user.total_tournaments_won }}/{{ user.total_tournaments_played }}</td>
+                <td data-label="Joined">{{ user.date_joined|date:"M d, Y" }}</td>
+                <td data-label="Actions">
+                    <button type="button" class="btn-action" data-add-coins-url="{% url 'custom_admin:add_coins' user.id %}" data-username="{{ user.username }}" onclick="openCoinModal(this)">
+                        <i class="fas fa-coins"></i>
+                    </button>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="empty-state-large">
+        <i class="fas fa-users"></i>
+        <h3>No users found</h3>
+        <p>Try adjusting your search query.</p>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Add Coins Modal -->
+<div id="coinModal" class="modal">
+    <div class="modal-content">
+        <h3>Add Coins to User</h3>
+        <form method="post" id="coinForm">
+            {% csrf_token %}
+            <p class="modal-user-info">User: <strong id="modalUsername"></strong></p>
+            
+            <div class="form-group">
+                <label>Amount (coins)</label>
+                <input type="number" name="amount" min="1" required class="form-input">
+            </div>
+            
+            <div class="form-group">
+                <label>Reason</label>
+                <input type="text" name="reason" placeholder="e.g., Bonus, Compensation" required class="form-input">
+            </div>
+            
+            <div class="modal-actions">
+                <button type="button" onclick="closeCoinModal()" class="btn btn-secondary">Cancel</button>
+                <button type="submit" class="btn btn-primary">Add Coins</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const coinModal = document.getElementById('coinModal');
+const coinForm = document.getElementById('coinForm');
+const modalUsername = document.getElementById('modalUsername');
+
+function openCoinModal(button) {
+    const url = button.getAttribute('data-add-coins-url');
+    const username = button.getAttribute('data-username');
+
+    if (modalUsername) {
+        modalUsername.textContent = username || '';
+    }
+
+    if (coinForm && url) {
+        coinForm.action = url;
+    }
+
+    coinModal?.classList.add('is-open');
+}
+
+function closeCoinModal() {
+    coinModal?.classList.remove('is-open');
+}
+
+window.addEventListener('click', function(event) {
+    if (event.target === coinModal) {
+        closeCoinModal();
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,268 @@
+{% extends 'custom_admin/base.html' %}
+{% load static %}
+
+{% block title %}Edit Store Item{% endblock %}
+{% block page_title %}Edit: {{ item.name }}{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <form method="post" enctype="multipart/form-data" class="item-form">
+        {% csrf_token %}
+        
+        <div class="form-section">
+            {% if item.image %}
+            <div class="current-image">
+                <p class="form-label">Current Image:</p>
+                <img src="{{ item.image.url }}" alt="{{ item.name }}" style="max-width: 200px; border-radius: 8px; border: 2px solid #e5e7eb;">
+            </div>
+            {% endif %}
+            
+            <div class="form-group">
+                <label for="image">{% if item.image %}Change Image{% else %}Add Image{% endif %}</label>
+                <input type="file" name="image" id="image" accept="image/*" class="form-input">
+                <small class="form-hint">Upload new image or leave empty to keep current</small>
+            </div>
+            
+            <div id="imagePreview" class="image-preview"></div>
+        </div>
+        
+        <div class="form-section">
+            <div class="form-group">
+                <label for="name">Item Name *</label>
+                <input type="text" name="name" id="name" required class="form-input" value="{{ item.name }}">
+            </div>
+            
+            <div class="form-group">
+                <label for="game">Game Category *</label>
+                <select name="game" id="game" required class="form-input">
+                    {% for game in games %}
+                    <option value="{{ game.id }}" {% if item.game.id == game.id %}selected{% endif %}>{{ game.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="price">Price (Points) *</label>
+                <input type="number" name="price" id="price" required class="form-input" min="1" value="{{ item.price }}">
+            </div>
+        </div>
+        
+        <div class="form-actions">
+            <a href="{% url 'custom_admin:store' %}" class="btn-secondary">
+                <i class="fas fa-times"></i> Cancel
+            </a>
+            <button type="submit" class="btn-primary">
+                <i class="fas fa-save"></i> Save Changes
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Image preview
+document.getElementById('image').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    const preview = document.getElementById('imagePreview');
+    
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            preview.innerHTML = '<p class="form-label">New Image Preview:</p><img src="' + e.target.result + '" alt="Preview">';
+            preview.style.display = 'block';
+        }
+        reader.readAsDataURL(file);
+    } else {
+        preview.innerHTML = '';
+        preview.style.display = 'none';
+    }
+});
+</script>
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/custom_admin.css' %}">
+<style>
+.form-container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.item-form {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 4px 16px rgba(1, 24, 216, 0.08);
+}
+
+.form-section {
+    margin-bottom: 2rem;
+    padding-bottom: 2rem;
+    border-bottom: 2px solid var(--border-color);
+}
+
+.form-section:last-of-type {
+    border-bottom: none;
+}
+
+.form-section h3 {
+    color: var(--primary-color);
+    margin: 0 0 1.5rem 0;
+    font-size: 1.25rem;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label, .form-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.form-input {
+    width: 100%;
+    padding: 0.875rem;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(1, 24, 216, 0.1);
+}
+
+textarea.form-input {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+}
+
+.form-hint {
+    display: block;
+    margin-top: 0.5rem;
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+}
+
+.checkbox-group {
+    margin-bottom: 1rem;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.checkbox-label input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    accent-color: var(--primary-color);
+    cursor: pointer;
+}
+
+.current-image {
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background: rgba(1, 24, 216, 0.03);
+    border-radius: 12px;
+}
+
+.current-image img {
+    max-width: 300px;
+    height: auto;
+    border-radius: 8px;
+    margin-top: 0.5rem;
+    border: 2px solid var(--border-color);
+}
+
+.image-preview {
+    display: none;
+    margin-top: 1rem;
+    padding: 1rem;
+    background: rgba(16, 185, 129, 0.05);
+    border: 2px solid #10b981;
+    border-radius: 12px;
+}
+
+.image-preview img {
+    max-width: 300px;
+    height: auto;
+    margin-top: 0.5rem;
+    border-radius: 8px;
+}
+
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    padding-top: 1rem;
+}
+
+.btn-primary, .btn-secondary {
+    padding: 0.875rem 2rem;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    text-decoration: none;
+    font-size: 1rem;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(1, 24, 216, 0.3);
+}
+
+.btn-secondary {
+    background: #e5e7eb;
+    color: var(--text-primary);
+}
+
+.btn-secondary:hover {
+    background: #d1d5db;
+}
+
+@media (max-width: 768px) {
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+    
+    .form-actions {
+        flex-direction: column-reverse;
+    }
+    
+    .btn-primary, .btn-secondary {
+        justify-content: center;
+    }
+    
+    .current-image img, .image-preview img {
+        max-width: 100%;
+    }
+}
+</style>
+{% endblock %}

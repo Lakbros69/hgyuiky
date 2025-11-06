@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block title %}Notifications - IGS OP{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="container">
+        <h1><i class="fas fa-bell"></i> NOTIFICATIONS</h1>
+        <p>Stay updated with your activities</p>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <div class="notifications-list">
+            {% for notification in notifications %}
+                <div class="notification-item {% if not notification.is_read %}unread{% endif %}">
+                    <div class="notification-icon {{ notification.notification_type }}">
+                        {% if notification.notification_type == 'tournament' %}
+                            <i class="fas fa-trophy"></i>
+                        {% elif notification.notification_type == 'payment' %}
+                            <i class="fas fa-coins"></i>
+                        {% elif notification.notification_type == 'order' %}
+                            <i class="fas fa-shopping-bag"></i>
+                        {% else %}
+                            <i class="fas fa-bell"></i>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="notification-content">
+                        <h4>{{ notification.title }}</h4>
+                        <p>{{ notification.message }}</p>
+                        <small>{{ notification.created_at|timesince }} ago</small>
+                    </div>
+                    
+                    {% if notification.link %}
+                        <a href="{{ notification.link }}" class="btn btn-secondary btn-sm">
+                            <i class="fas fa-arrow-right"></i> View
+                        </a>
+                    {% endif %}
+                </div>
+            {% empty %}
+                <div class="empty-state">
+                    <i class="fas fa-bell-slash"></i>
+                    <h3>No Notifications</h3>
+                    <p>You're all caught up!</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

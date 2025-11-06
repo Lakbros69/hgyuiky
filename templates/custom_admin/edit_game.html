@@ -1,0 +1,211 @@
+{% extends 'custom_admin/base.html' %}
+{% load static %}
+
+{% block title %}Edit Game Category{% endblock %}
+{% block page_title %}Edit Game Category: {{ game.name }}{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <form method="post" enctype="multipart/form-data" class="admin-form">
+        {% csrf_token %}
+        
+        <div class="form-grid">
+            <div class="form-group">
+                <label for="name">Game Name *</label>
+                <input type="text" id="name" name="name" class="form-control" required value="{{ game.name }}">
+                <small>Display name for the game</small>
+            </div>
+            
+            <div class="form-group">
+                <label for="slug">Slug *</label>
+                <input type="text" id="slug" name="slug" class="form-control" value="{{ game.slug }}">
+                <small>URL-friendly name (leave blank to auto-generate)</small>
+            </div>
+        </div>
+        
+        <div class="form-grid">
+            <div class="form-group">
+                <label for="icon">Font Awesome Icon *</label>
+                <input type="text" id="icon" name="icon" class="form-control" required value="{{ game.icon }}">
+                <small>Icon name from FontAwesome (without 'fa-' prefix)</small>
+            </div>
+            
+            <div class="form-group">
+                <label for="banner_color">Banner Color *</label>
+                <input type="color" id="banner_color" name="banner_color" class="form-control" value="{{ game.banner_color }}">
+                <small>Background color for the game banner</small>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label for="image">Game Image/Logo</label>
+            {% if game.image %}
+                <div style="margin-bottom: 0.5rem;">
+                    <img src="{{ game.image.url }}" alt="{{ game.name }}" style="max-width: 150px; max-height: 150px; border-radius: 8px; border: 2px solid #e5e7eb;">
+                    <p style="margin-top: 0.25rem; font-size: 0.85rem; color: #6b7280;">Current image</p>
+                </div>
+            {% endif %}
+            <input type="file" id="image" name="image" class="form-control" accept="image/*">
+            <small>Upload new game icon or logo image (leave empty to keep current)</small>
+        </div>
+        
+        <div class="form-group">
+            <label for="product_types">Product Types *</label>
+            <input type="text" id="product_types" name="product_types" class="form-control" required value="{{ game.product_types }}" placeholder="e.g., DIAMONDS, MEMBERSHIP, UC, ROYALE PASS">
+            <small>Comma-separated list of product types for this game</small>
+        </div>
+        
+        <div class="form-group">
+            <label for="order_summary_note">Order Summary Note</label>
+            <textarea id="order_summary_note" name="order_summary_note" class="form-control" rows="3" placeholder="Optional instructions that appear on the order summary page">{{ game.order_summary_note }}</textarea>
+            <small>This text shows on the order summary step when players purchase this game's items.</small>
+        </div>
+
+        <div class="form-grid">
+            <div class="form-group">
+                <label for="order_id_label">In-Game ID Label</label>
+                <input type="text" id="order_id_label" name="order_id_label" class="form-control" placeholder="In game id" value="{{ game.order_id_label }}">
+                <small>Overrides the label shown above the in-game ID field.</small>
+            </div>
+            <div class="form-group">
+                <label for="order_id_placeholder">In-Game ID Placeholder</label>
+                <input type="text" id="order_id_placeholder" name="order_id_placeholder" class="form-control" placeholder="Your In-Game ID" value="{{ game.order_id_placeholder }}">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="order_id_help_text">In-Game ID Help Text</label>
+            <input type="text" id="order_id_help_text" name="order_id_help_text" class="form-control" placeholder="Enter your in-game ID where items will be delivered" value="{{ game.order_id_help_text }}">
+        </div>
+
+        <div class="form-grid">
+            <div class="form-group">
+                <label for="order_name_label">In-Game Name Label</label>
+                <input type="text" id="order_name_label" name="order_name_label" class="form-control" placeholder="In game name" value="{{ game.order_name_label }}">
+                <small>Overrides the label shown above the in-game name field.</small>
+            </div>
+            <div class="form-group">
+                <label for="order_name_placeholder">In-Game Name Placeholder</label>
+                <input type="text" id="order_name_placeholder" name="order_name_placeholder" class="form-control" placeholder="Your In-Game Name" value="{{ game.order_name_placeholder }}">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="order_name_help_text">In-Game Name Help Text</label>
+            <input type="text" id="order_name_help_text" name="order_name_help_text" class="form-control" placeholder="Optional help text shown below the in-game name field" value="{{ game.order_name_help_text }}">
+        </div>
+
+        <div class="form-group">
+            <label for="description">Description</label>
+            <textarea id="description" name="description" class="form-control" rows="3" placeholder="Optional description...">{{ game.description }}</textarea>
+        </div>
+        
+        <div class="form-grid">
+            <div class="form-group">
+                <label for="display_order">Display Order</label>
+                <input type="number" id="display_order" name="display_order" class="form-control" value="{{ game.display_order }}" min="0">
+                <small>Lower numbers appear first</small>
+            </div>
+            
+            <div class="form-group">
+                <label class="checkbox-label">
+                    <input type="checkbox" name="is_active" {% if game.is_active %}checked{% endif %}>
+                    <span>Active (visible to users)</span>
+                </label>
+            </div>
+        </div>
+        
+        <div class="form-actions">
+            <a href="{% url 'custom_admin:games' %}" class="btn btn-secondary">
+                <i class="fas fa-times"></i> Cancel
+            </a>
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save"></i> Update Game Category
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.form-container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.admin-form {
+    background: white;
+    padding: 2rem;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: #374151;
+}
+
+.form-control {
+    width: 100%;
+    padding: 0.75rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.2s;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: #2563eb;
+}
+
+.form-group small {
+    display: block;
+    margin-top: 0.25rem;
+    color: #6b7280;
+    font-size: 0.85rem;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    margin-top: 1.75rem;
+}
+
+.checkbox-label input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    accent-color: #2563eb;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 2px solid #e5e7eb;
+}
+
+@media (max-width: 768px) {
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+{% endblock %}

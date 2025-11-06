@@ -1,0 +1,331 @@
+{% extends 'base.html' %}
+
+{% block title %}Submit Result - {{ tournament.title }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="result-submission-container">
+        <div class="result-header">
+            <h1>Submit Tournament Result</h1>
+            <div class="tournament-info">
+                <h2>{{ tournament.title }}</h2>
+                <div class="tournament-meta">
+                    <span class="meta-item">
+                        <i class="fas fa-gamepad"></i>
+                        {{ tournament.get_game_display }}
+                    </span>
+                    <span class="meta-item">
+                        <i class="fas fa-users"></i>
+                        {{ tournament.get_team_type_display }}
+                    </span>
+                    <span class="meta-item">
+                        <i class="fas fa-trophy"></i>
+                        Match ID: {{ tournament.matchroom_id }}
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="result-form-card">
+            <div class="card-header">
+                <h3>Your Performance</h3>
+                <p>Please enter your final rank and kill count from the tournament</p>
+            </div>
+
+            <form method="post" enctype="multipart/form-data" class="result-form">
+                {% csrf_token %}
+                
+                <div class="form-group">
+                    <label for="rank">Final Rank <span class="required">*</span></label>
+                    <input type="number" 
+                           id="rank" 
+                           name="rank" 
+                           class="form-control" 
+                           min="1" 
+                           max="{{ tournament.max_players }}"
+                           required>
+                    <small class="form-help">Your final position in the tournament (1-{{ tournament.max_players }})</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="kills">Total Kills</label>
+                    <input type="number" 
+                           id="kills" 
+                           name="kills" 
+                           class="form-control" 
+                           min="0" 
+                           value="0">
+                    <small class="form-help">Number of eliminations you achieved</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="screenshot">Result Screenshot (Optional)</label>
+                    <input type="file" 
+                           id="screenshot" 
+                           name="screenshot" 
+                           class="form-control" 
+                           accept="image/*">
+                    <small class="form-help">Upload a screenshot of your final result for verification</small>
+                </div>
+
+                <div class="prize-preview">
+                    <h4>Prize Calculation</h4>
+                    <div class="prize-breakdown">
+                        <div class="prize-item">
+                            <span class="prize-label">1st Place:</span>
+                            <span class="prize-value">{{ tournament.first_place_prize }} points</span>
+                        </div>
+                        <div class="prize-item">
+                            <span class="prize-label">2nd-5th Place:</span>
+                            <span class="prize-value">{{ tournament.rank_2_5_prize }} points each</span>
+                        </div>
+                        <div class="prize-item">
+                            <span class="prize-label">Per Kill Bonus:</span>
+                            <span class="prize-value">{{ tournament.per_kill_prize }} points each</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-check"></i>
+                        Submit Result
+                    </button>
+                    <a href="{% url 'full_tournament_detail' tournament.pk %}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i>
+                        Back to Tournament
+                    </a>
+                </div>
+            </form>
+        </div>
+
+        <div class="info-card">
+            <div class="card-header">
+                <h4>Important Notes</h4>
+            </div>
+            <div class="card-body">
+                <ul class="info-list">
+                    <li><i class="fas fa-info-circle"></i> Results are final once submitted</li>
+                    <li><i class="fas fa-clock"></i> Submit your result as soon as possible after the tournament ends</li>
+                    <li><i class="fas fa-image"></i> Screenshots help verify your performance</li>
+                    <li><i class="fas fa-coins"></i> Prizes are automatically credited to your account</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.result-submission-container {
+    max-width: 600px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+.result-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.result-header h1 {
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+}
+
+.tournament-info h2 {
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+}
+
+.tournament-meta {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.meta-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.result-form-card, .info-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 1.5rem;
+}
+
+.card-header {
+    padding: 1.5rem 1.5rem 0;
+    border-bottom: 1px solid #e5e7eb;
+    margin-bottom: 1.5rem;
+}
+
+.card-header h3, .card-header h4 {
+    margin: 0 0 0.5rem 0;
+    color: var(--text-primary);
+}
+
+.card-header p {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.result-form {
+    padding: 0 1.5rem 1.5rem;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.required {
+    color: #ef4444;
+}
+
+.form-control {
+    width: 100%;
+    padding: 0.75rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+.form-help {
+    display: block;
+    margin-top: 0.25rem;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+}
+
+.prize-preview {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.prize-preview h4 {
+    margin: 0 0 0.75rem 0;
+    color: var(--text-primary);
+}
+
+.prize-breakdown {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.prize-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.prize-label {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.prize-value {
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 2rem;
+}
+
+.btn {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-primary {
+    background: var(--primary-color);
+    color: white;
+}
+
+.btn-primary:hover {
+    background: var(--primary-dark);
+}
+
+.btn-secondary {
+    background: #6b7280;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background: #4b5563;
+}
+
+.card-body {
+    padding: 0 1.5rem 1.5rem;
+}
+
+.info-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.info-list li {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 0;
+    color: var(--text-muted);
+}
+
+.info-list i {
+    color: var(--primary-color);
+    width: 16px;
+}
+
+@media (max-width: 768px) {
+    .tournament-meta {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+    }
+    
+    .btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+</style>
+{% endblock %}

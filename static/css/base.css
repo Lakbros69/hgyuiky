@@ -1,0 +1,166 @@
+/* Base Styles - Variables, Reset, Typography, Layout */
+
+:root {
+    --primary-color: #0118D8;
+    --secondary-color: #1B56FD;
+    --accent-color: #a78bfa;
+    --success-color: #10b981;
+    --warning-color: #f59e0b;
+    --danger-color: #ef4444;
+    --dark-bg: #0118D8;
+    --light-blue: #bfdbfe;
+    --lavender: #c7b8f5;
+    --light-purple: #d8b4fe;
+    --off-white: #FFF8F8;
+    --cream: #E9DFC3;
+    --card-bg: rgba(255, 255, 255, 0.95);
+    --card-hover: rgba(255, 255, 255, 1);
+    --border-color: rgba(1, 24, 216, 0.1);
+    --text-primary: #1e293b;
+    --text-secondary: #64748b;
+    --glow-primary: rgba(1, 24, 216, 0.3);
+    --glow-secondary: rgba(27, 86, 253, 0.3);
+    --app-max-width: 480px;
+    --app-max-width-desktop: 1400px;
+}
+
+* { 
+    margin: 0; 
+    padding: 0; 
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(180deg, var(--off-white) 0%, var(--light-blue) 30%, var(--lavender) 60%, var(--light-purple) 100%);
+    background-attachment: fixed;
+    color: var(--text-primary);
+    line-height: 1.6;
+    min-height: 100vh;
+    position: relative;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Mobile App Wrapper */
+.app-container {
+    max-width: var(--app-max-width-desktop);
+    margin: 0 auto;
+    background: transparent;
+    min-height: 100vh;
+    position: relative;
+}
+
+a { color: var(--primary-color); text-decoration: none; transition: all 0.3s ease; }
+a:hover { color: var(--secondary-color); }
+img { max-width: 100%; height: auto; display: block; }
+ul { list-style: none; }
+
+.container { 
+    max-width: 100%; 
+    margin: 0 auto; 
+    padding: 0 16px; 
+}
+
+.main-content { 
+    min-height: calc(100vh - 80px); 
+    padding-bottom: 80px;
+}
+
+@media (min-width: 769px) {
+    .container {
+        padding: 0 24px;
+    }
+    
+    .app-container {
+        padding: 20px;
+    }
+}
+
+.text-primary { color: var(--primary-color); }
+.text-secondary { color: var(--text-secondary); }
+.text-success { color: var(--success-color); }
+.text-warning { color: var(--warning-color); }
+.text-danger { color: var(--danger-color); }
+.text-muted { color: var(--text-secondary); }
+.text-center { text-align: center; }
+
+.section { padding: 2.5rem 0; }
+.section-title {
+    font-size: 1.75rem; 
+    font-weight: 700; 
+    text-align: left; 
+    margin-bottom: 1.5rem;
+    text-transform: uppercase; 
+    letter-spacing: 1px;
+    color: var(--text-primary);
+}
+.section-header { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    margin-bottom: 1.5rem; 
+}
+.bg-dark { 
+    background: transparent;
+}
+
+.empty-state { 
+    text-align: center; 
+    padding: 3rem 2rem;
+    background: var(--card-bg);
+    backdrop-filter: blur(20px);
+    border-radius: 20px;
+    border: 1px solid var(--border-color);
+}
+.empty-state i { 
+    font-size: 3rem; 
+    color: var(--text-secondary); 
+    margin-bottom: 1rem; 
+    display: block; 
+}
+.empty-state h3 { margin-bottom: 0.5rem; }
+.empty-state p { color: var(--text-secondary); }
+
+.gradient-text {
+    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 0 20px var(--glow-primary));
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(15, 15, 30, 0.3);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--primary-color);
+}
+
+/* Firefox Scrollbar */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: var(--primary-color) rgba(15, 15, 30, 0.3);
+}
+
+@media (max-width: 768px) {
+    .section { padding: 1.5rem 0; }
+    .section-title { font-size: 1.5rem; }
+}

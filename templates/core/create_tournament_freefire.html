@@ -1,0 +1,223 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Create FreeFire Match Room{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="container">
+        <a href="javascript:history.back()" class="back-link">
+            <i class="fas fa-arrow-left"></i> Back
+        </a>
+        <h1><i class="fas fa-trophy"></i> CREATE MATCH ROOM</h1>
+        <p class="points-badge"><i class="fas fa-coins"></i> {{ user.coins }} Points</p>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <div class="create-tournament-container">
+            <div class="info-banner">
+                <i class="fas fa-info-circle"></i>
+                <div>
+                    <strong>Create your tournaments</strong>
+                    <p>Create your own match. This match will be shown to others players in this app.</p>
+                </div>
+            </div>
+
+            <h2 class="game-title"><span class="game-name">{{ game_name }}'s</span> <span class="matchroom-text">Matchroom</span></h2>
+
+            <form method="post" class="tournament-form" id="tournamentForm">
+                {% csrf_token %}
+
+                <!-- Game Mode Section -->
+                <div class="form-section">
+                    <h3>Choose Game Mode:</h3>
+                    <div class="button-group">
+                        <button type="button" class="mode-btn active" name="game_mode" value="custom" data-mode="custom">
+                            Custom Game Mode
+                        </button>
+                        <button type="button" class="mode-btn" name="game_mode" value="lonewolf" data-mode="lonewolf">
+                            Lonewolf Game Mode
+                        </button>
+                    </div>
+                    <input type="hidden" name="game_mode" value="custom" id="gameModeInput">
+                </div>
+
+                <!-- Team Size Section -->
+                <div class="form-section">
+                    <h3>Team:</h3>
+                    <div class="button-group">
+                        <button type="button" class="team-btn active" data-team="1">1v1</button>
+                        <button type="button" class="team-btn" data-team="2">2v2</button>
+                        <button type="button" class="team-btn" data-team="3">3v3</button>
+                        <button type="button" class="team-btn" data-team="4">4v4</button>
+                    </div>
+                    <input type="hidden" name="team_size" value="1" id="teamSizeInput">
+                </div>
+
+                <!-- Game Settings Section -->
+                <div class="form-section">
+                    <h3>Game Settings:</h3>
+                    
+                    <div class="setting-row">
+                        <label>Throwable Limit</label>
+                        <div class="toggle-group">
+                            <button type="button" class="toggle-btn active" data-setting="throwable" data-value="yes">Yes</button>
+                            <button type="button" class="toggle-btn" data-setting="throwable" data-value="no">No</button>
+                        </div>
+                        <input type="hidden" name="throwable_limit" value="yes" id="throwableLimitInput">
+                    </div>
+
+                    <div class="setting-row">
+                        <label>Gun Attribute</label>
+                        <div class="toggle-group">
+                            <button type="button" class="toggle-btn active" data-setting="gun_attribute" data-value="yes">Yes</button>
+                            <button type="button" class="toggle-btn" data-setting="gun_attribute" data-value="no">No</button>
+                        </div>
+                        <input type="hidden" name="gun_attribute" value="yes" id="gunAttributeInput">
+                    </div>
+
+                    <div class="setting-row">
+                        <label>CharacterSkill</label>
+                        <div class="toggle-group">
+                            <button type="button" class="toggle-btn active" data-setting="character_skill" data-value="yes">Yes</button>
+                            <button type="button" class="toggle-btn" data-setting="character_skill" data-value="no">No</button>
+                        </div>
+                        <input type="hidden" name="character_skill" value="yes" id="characterSkillInput">
+                    </div>
+
+                    <div class="setting-row">
+                        <label>Rounds</label>
+                        <div class="toggle-group">
+                            <button type="button" class="toggle-btn active" data-setting="rounds" data-value="9">9 Rounds</button>
+                            <button type="button" class="toggle-btn" data-setting="rounds" data-value="13">13 Rounds</button>
+                        </div>
+                        <input type="hidden" name="rounds" value="9" id="roundsInput">
+                    </div>
+
+                    <div class="setting-row">
+                        <label>Headshot Only</label>
+                        <div class="toggle-group">
+                            <button type="button" class="toggle-btn active" data-setting="headshot" data-value="yes">Yes</button>
+                            <button type="button" class="toggle-btn" data-setting="headshot" data-value="no">No</button>
+                        </div>
+                        <input type="hidden" name="headshot_only" value="yes" id="headshotInput">
+                    </div>
+
+                    <div class="setting-row">
+                        <label>Coin</label>
+                        <div class="toggle-group">
+                            <button type="button" class="toggle-btn active" data-setting="coin" data-value="default">Default Coins</button>
+                            <button type="button" class="toggle-btn" data-setting="coin" data-value="9980">9980 Coins</button>
+                        </div>
+                        <input type="hidden" name="coin_setting" value="default" id="coinSettingInput">
+                    </div>
+                </div>
+
+                <!-- Matchroom Name Section -->
+                <div class="form-section">
+                    <h3>Matchroom Name:</h3>
+                    <input type="text" name="matchroom_name" class="form-input" placeholder="Enter your matchroom Name" required>
+                </div>
+
+                <!-- Entry Fee & Prize Section -->
+                <div class="form-section">
+                    <div class="form-row-double">
+                        <div class="form-group">
+                            <label>Entry Fee</label>
+                            <input type="number" name="entry_fee" class="form-input" placeholder="Entry Fee" min="0" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Potential Winning</label>
+                            <input type="number" name="prize_pool" class="form-input" placeholder="Potential Winning" min="0" required>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Match Rules Section -->
+                <div class="form-section">
+                    <details class="rules-dropdown">
+                        <summary>Match Rules & Regulations</summary>
+                        <textarea name="rules" class="form-textarea" rows="5" placeholder="Enter match rules and regulations..."></textarea>
+                    </details>
+                </div>
+
+                <!-- Date & Time Section -->
+                <div class="form-section">
+                    <h3>Choose Game Time:</h3>
+                    <div class="form-row-double">
+                        <div class="form-group">
+                            <label>Date</label>
+                            <input type="date" name="date" class="form-input" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Select Time</label>
+                            <input type="time" name="time" class="form-input" required>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Agreement Checkbox -->
+                <div class="form-section">
+                    <label class="checkbox-label">
+                        <input type="checkbox" required>
+                        <span>I understand the Match Room rules and agree to them.</span>
+                    </label>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="btn-create-matchroom">
+                    Create Matchroom
+                </button>
+            </form>
+        </div>
+    </div>
+</section>
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Game Mode Toggle
+    document.querySelectorAll('.mode-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            document.getElementById('gameModeInput').value = this.dataset.mode;
+        });
+    });
+
+    // Team Size Toggle
+    document.querySelectorAll('.team-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.team-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            document.getElementById('teamSizeInput').value = this.dataset.team;
+        });
+    });
+
+    // Settings Toggle
+    document.querySelectorAll('.toggle-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const setting = this.dataset.setting;
+            const value = this.dataset.value;
+            
+            this.closest('.toggle-group').querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            
+            document.getElementById(setting.replace('_', '') + 'Input').value = value;
+            if (document.getElementById(setting + 'Input')) {
+                document.getElementById(setting + 'Input').value = value;
+            }
+        });
+    });
+
+    // Set minimum date to today
+    const dateInput = document.querySelector('input[name="date"]');
+    if (dateInput) {
+        dateInput.min = new Date().toISOString().split('T')[0];
+    }
+});
+</script>
+{% endblock %}
+{% endblock %}

@@ -1,0 +1,99 @@
+{% extends 'custom_admin/base.html' %}
+{% load static %}
+
+{% block title %}Payment Methods{% endblock %}
+{% block page_title %}Payment Methods{% endblock %}
+
+{% block content %}
+<div class="payment-header">
+    <div class="payment-stats">
+        <div class="stat-badge">
+            <span>Total Methods: <strong>{{ methods.count }}</strong></span>
+        </div>
+        <div class="stat-badge">
+            <span>Active: <strong>{{ active_count }}</strong></span>
+        </div>
+    </div>
+    
+    <a href="{% url 'custom_admin:add_payment_method' %}" class="btn btn-primary">
+        <i class="fas fa-plus-circle"></i> Add Payment Method
+    </a>
+</div>
+
+<!-- Payment Methods Grid -->
+<div class="payment-grid">
+    {% for method in methods %}
+    <div class="payment-card">
+        <div class="payment-card-header">
+            <div class="payment-icon">
+                <i class="{% if method.method_type == 'esewa' %}fas fa-wallet{% elif method.method_type == 'khalti' %}fas fa-mobile-alt{% elif method.method_type == 'bank' %}fas fa-university{% else %}fas fa-credit-card{% endif %}"></i>
+            </div>
+            <div>
+                <h3>{{ method.name }}</h3>
+                <span class="method-type-badge">{{ method.get_method_type_display }}</span>
+            </div>
+        </div>
+        
+        <div class="payment-card-body">
+            {% if method.account_number %}
+            <div class="payment-detail">
+                <i class="fas fa-hashtag"></i>
+                <span>{{ method.account_number }}</span>
+            </div>
+            {% endif %}
+            
+            {% if method.account_name %}
+            <div class="payment-detail">
+                <i class="fas fa-user"></i>
+                <span>{{ method.account_name }}</span>
+            </div>
+            {% endif %}
+            
+            {% if method.qr_code %}
+            <div class="payment-qr">
+                <img src="{{ method.qr_code.url }}" alt="QR Code">
+            </div>
+            {% endif %}
+            
+            {% if method.instructions %}
+            <div class="payment-instructions">
+                <i class="fas fa-info-circle"></i>
+                <p>{{ method.instructions|truncatewords:20 }}</p>
+            </div>
+            {% endif %}
+            
+            <div class="payment-meta">
+                <span class="display-order">Order: {{ method.display_order }}</span>
+                <span class="badge badge-{{ method.is_active|yesno:'active,inactive' }}">
+                    {{ method.is_active|yesno:'Active,Inactive' }}
+                </span>
+            </div>
+        </div>
+        
+        <div class="payment-card-actions">
+            <a href="{% url 'custom_admin:edit_payment_method' method.id %}" class="btn-action btn-success">
+                <i class="fas fa-edit"></i>
+            </a>
+            <form method="post" action="{% url 'custom_admin:toggle_payment_method' method.id %}" style="display: inline;">
+                {% csrf_token %}
+                <button type="submit" class="btn-action btn-toggle" title="{{ method.is_active|yesno:'Deactivate,Activate' }}">
+                    <i class="fas fa-{% if method.is_active %}eye-slash{% else %}eye{% endif %}"></i>
+                </button>
+            </form>
+            <form method="post" action="{% url 'custom_admin:delete_payment_method' method.id %}" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this payment method?');">
+                {% csrf_token %}
+                <button type="submit" class="btn-action btn-delete" title="Delete">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+    {% empty %}
+    <div class="empty-state-large" style="grid-column: 1 / -1;">
+        <i class="fas fa-credit-card"></i>
+        <h3>No Payment Methods</h3>
+        <p>Click "Add Payment Method" to add your first payment option for users!</p>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,132 @@
+{% extends 'custom_admin/base.html' %}
+
+{% block title %}Create Full Tournament - Admin Panel{% endblock %}
+
+{% block content %}
+<div class="page-header-actions">
+    <div>
+        <h2 class="section-title">Create Full Tournament</h2>
+        <p class="section-subtitle">Configure schedule, format, and rewards for your next event</p>
+    </div>
+    <a href="{% url 'custom_admin:full_tournaments' %}" class="btn btn-secondary">
+        <i class="fas fa-arrow-left"></i> Back to Tournaments
+    </a>
+</div>
+
+<div class="form-container">
+    <form method="post" class="tournament-form">
+        {% csrf_token %}
+
+        <div class="form-section">
+            <h3><i class="fas fa-clipboard-list"></i> Basic Details</h3>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="title"><i class="fas fa-heading"></i> Tournament Title *</label>
+                    <input type="text" id="title" name="title" class="form-control" required placeholder="e.g., Developer Championship">
+                </div>
+                <div class="form-group">
+                    <label for="game"><i class="fas fa-gamepad"></i> Game *</label>
+                    <select id="game" name="game" class="form-control" required>
+                        <option value="">Select Game</option>
+                        {% for value, label in game_choices %}
+                            <option value="{{ value }}">{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="team_type"><i class="fas fa-users"></i> Team Type *</label>
+                    <select id="team_type" name="team_type" class="form-control" required>
+                        {% for value, label in team_choices %}
+                            <option value="{{ value }}">{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="max_players"><i class="fas fa-user-friends"></i> Max Players *</label>
+                    <input type="number" id="max_players" name="max_players" class="form-control" value="100" min="1" required>
+                </div>
+                <div class="form-group">
+                    <label for="entry_fee"><i class="fas fa-ticket-alt"></i> Entry Fee (Points)</label>
+                    <input type="number" id="entry_fee" name="entry_fee" class="form-control" value="0" min="0">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="game_date"><i class="fas fa-calendar"></i> Game Date *</label>
+                    <input type="date" id="game_date" name="game_date" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="game_time"><i class="fas fa-clock"></i> Game Time *</label>
+                    <input type="time" id="game_time" name="game_time" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="game_map"><i class="fas fa-map"></i> Game Map *</label>
+                    <input type="text" id="game_map" name="game_map" class="form-control" required placeholder="e.g., Bermuda, Erangel, Miramar">
+                </div>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h3><i class="fas fa-award"></i> Prize Distribution</h3>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="first_place_prize"><i class="fas fa-trophy"></i> First Place Prize *</label>
+                    <input type="number" id="first_place_prize" name="first_place_prize" class="form-control" min="0" required placeholder="100">
+                    <small class="form-text">Points awarded to the champion</small>
+                </div>
+                <div class="form-group">
+                    <label for="rank_2_5_prize"><i class="fas fa-medal"></i> Rank 2-5 Prize *</label>
+                    <input type="number" id="rank_2_5_prize" name="rank_2_5_prize" class="form-control" min="0" required placeholder="20">
+                    <small class="form-text">Shared prize for ranks 2 through 5</small>
+                </div>
+                <div class="form-group">
+                    <label for="per_kill_prize"><i class="fas fa-crosshairs"></i> Per Kill Prize *</label>
+                    <input type="number" id="per_kill_prize" name="per_kill_prize" class="form-control" min="0" required placeholder="10">
+                    <small class="form-text">Points rewarded per confirmed kill</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h3><i class="fas fa-file-alt"></i> Match Rules & Regulations</h3>
+            <div class="form-group">
+                <label for="rules_regulations">Detailed Rules *</label>
+                <textarea id="rules_regulations" name="rules_regulations" class="form-control" rows="8" required placeholder="Enter all important rules, restrictions, and guidelines for participants..."></textarea>
+                <small class="form-text">Provide instructions on room sharing, disqualifications, tie-breakers, and fair-play expectations.</small>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-success btn-lg">
+                <i class="fas fa-check"></i> Create Tournament
+            </button>
+            <a href="{% url 'custom_admin:full_tournaments' %}" class="btn btn-secondary btn-lg">
+                <i class="fas fa-times"></i> Cancel
+            </a>
+        </div>
+    </form>
+</div>
+
+<script>
+// Set minimum date to today
+document.getElementById('game_date').min = new Date().toISOString().split('T')[0];
+
+// Form validation
+document.querySelector('.tournament-form').addEventListener('submit', function(e) {
+    const firstPlace = parseInt(document.getElementById('first_place_prize').value);
+    const rank2_5 = parseInt(document.getElementById('rank_2_5_prize').value);
+
+    if (firstPlace < rank2_5) {
+        e.preventDefault();
+        alert('First place prize should be greater than or equal to rank 2-5 prize');
+        return false;
+    }
+
+    return true;
+});
+</script>
+{% endblock %}

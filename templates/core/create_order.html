@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+
+{% block title %}Place Order - IGS OP{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="container">
+        <a href="{% url 'store_item_detail' item.pk %}" class="back-link">
+            <i class="fas fa-arrow-left"></i> Back to Item
+        </a>
+        <h1><i class="fas fa-shopping-cart"></i> PLACE ORDER</h1>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <div class="form-container">
+            <div class="form-card">
+                <h2>Order Summary</h2>
+                
+                <div class="order-item">
+                    {% if item.image %}
+                        <img src="{{ item.image.url }}" alt="{{ item.name }}" class="order-image">
+                    {% else %}
+                        <div class="order-image order-placeholder">
+                            <i class="fas fa-gem"></i>
+                        </div>
+                    {% endif %}
+                    
+                    <div class="order-details">
+                        <h3>{{ item.name }}</h3>
+                        <p>{{ item.get_item_type_display }}</p>
+                        <div class="order-price">
+                            <i class="fas fa-coins"></i> {{ item.price }} Coins
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="info-box">
+                    <div class="info-item">
+                        <strong>Your Balance:</strong>
+                        <span class="text-success">{{ user.coins }} Coins</span>
+                    </div>
+                    <div class="info-item">
+                        <strong>Order Cost:</strong>
+                        <span class="text-primary">{{ item.price }} Coins</span>
+                    </div>
+                    <div class="info-item">
+                        <strong>After Purchase:</strong>
+                        <span>{{ user.coins|add:"-"|add:item.price }} Coins</span>
+                    </div>
+                </div>
+                
+                <form method="post" class="form">
+                    {% csrf_token %}
+                    
+                    <div class="form-group">
+                        <label>{{ form.in_game_id.label }} {% if form.in_game_id.field.required %}<span class="required">*</span>{% endif %}</label>
+                        {{ form.in_game_id }}
+                        {% if form.in_game_id.errors %}
+                            <span class="error">{{ form.in_game_id.errors.0 }}</span>
+                        {% endif %}
+                        {% if order_texts.id_help %}
+                            <small>{{ order_texts.id_help }}</small>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>{{ form.in_game_name.label }}</label>
+                        {{ form.in_game_name }}
+                        {% if form.in_game_name.errors %}
+                            <span class="error">{{ form.in_game_name.errors.0 }}</span>
+                        {% endif %}
+                        {% if order_texts.name_help %}
+                            <small>{{ order_texts.name_help }}</small>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i>
+                        {% if order_summary_note %}
+                            {{ order_summary_note|linebreaksbr }}
+                        {% else %}
+                            <strong>Important:</strong> Double-check your in-game ID. Items will be delivered to this ID.
+                        {% endif %}
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary btn-lg btn-block">
+                        <i class="fas fa-check-circle"></i> Confirm & Place Order
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

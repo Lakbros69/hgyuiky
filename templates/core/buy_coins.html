@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+
+{% block title %}Buy Coins - IGS OP{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="container">
+        <a href="{% url 'wallet' %}" class="back-link">
+            <i class="fas fa-arrow-left"></i> Back to Wallet
+        </a>
+        <h1><i class="fas fa-coins"></i> BUY COINS</h1>
+        <p>Choose a coin package and payment method</p>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <!-- Coin Packages -->
+        <div class="section-header">
+            <h2>Select Coin Package</h2>
+        </div>
+        
+        <div class="packages-grid">
+            {% for package in coin_packages %}
+                <div class="package-card {% if forloop.counter == 3 %}popular{% endif %}">
+                    {% if forloop.counter == 3 %}
+                        <div class="popular-badge">
+                            <i class="fas fa-star"></i> POPULAR
+                        </div>
+                    {% endif %}
+                    
+                    <div class="package-icon">
+                        <i class="fas fa-coins"></i>
+                    </div>
+                    
+                    <h3>{{ package.coins }} Coins</h3>
+                    <div class="package-price">
+                        Rs. {{ package.price }}
+                    </div>
+                    
+                    <div class="package-info">
+                        <div class="info-item">
+                            <i class="fas fa-check-circle"></i> Instant Delivery
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-shield-alt"></i> Secure Payment
+                        </div>
+                    </div>
+                    
+                    <button class="btn btn-primary btn-block select-package" data-coins="{{ package.coins }}" data-price="{{ package.price }}">
+                        <i class="fas fa-shopping-cart"></i> Buy Now
+                    </button>
+                </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Payment Methods -->
+        <div class="section-header" id="payment-section" style="display: none;">
+            <h2>Select Payment Method</h2>
+        </div>
+        
+        <div class="payment-methods" id="payment-methods" style="display: none;">
+            {% for method in payment_methods %}
+                <a href="{% url 'payment_request' method.method_type %}" class="payment-card">
+                    <div class="payment-icon">
+                        {% if method.method_type == 'esewa' %}
+                            <i class="fas fa-wallet"></i>
+                        {% elif method.method_type == 'khalti' %}
+                            <i class="fas fa-mobile-alt"></i>
+                        {% elif method.method_type == 'bank' %}
+                            <i class="fas fa-university"></i>
+                        {% else %}
+                            <i class="fas fa-credit-card"></i>
+                        {% endif %}
+                    </div>
+                    <h3>{{ method.name }}</h3>
+                    {% if method.account_name %}
+                    <p>{{ method.account_name }}</p>
+                    {% elif method.account_number %}
+                    <p>{{ method.account_number }}</p>
+                    {% else %}
+                    <p>{{ method.get_method_type_display }}</p>
+                    {% endif %}
+                    <div class="btn btn-secondary btn-sm">
+                        <i class="fas fa-arrow-right"></i> Continue
+                    </div>
+                </a>
+            {% empty %}
+                <div class="empty-state">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <p>No payment methods available at the moment.</p>
+                    <p><small>Please contact admin to add payment methods.</small></p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+{% block extra_js %}
+<script>
+document.querySelectorAll('.select-package').forEach(button => {
+    button.addEventListener('click', function() {
+        const coins = this.dataset.coins;
+        const price = this.dataset.price;
+        
+        // Show payment methods section
+        document.getElementById('payment-section').style.display = 'block';
+        document.getElementById('payment-methods').style.display = 'grid';
+        
+        // Scroll to payment methods
+        document.getElementById('payment-section').scrollIntoView({ behavior: 'smooth' });
+        
+        // Store selected package in session storage
+        sessionStorage.setItem('selected_coins', coins);
+        sessionStorage.setItem('selected_price', price);
+    });
+});
+</script>
+{% endblock %}
+{% endblock %}

@@ -1,0 +1,99 @@
+{% extends 'custom_admin/base.html' %}
+{% load static %}
+
+{% block title %}Payment Management{% endblock %}
+{% block page_title %}Payment Requests{% endblock %}
+
+{% block content %}
+<!-- Filter Tabs -->
+<div class="filter-tabs">
+    <a href="?status=pending" class="filter-tab {% if status_filter == 'pending' %}active{% endif %}">
+        Pending ({{ pending_count }})
+    </a>
+    <a href="?status=approved" class="filter-tab {% if status_filter == 'approved' %}active{% endif %}">
+        Approved
+    </a>
+    <a href="?status=rejected" class="filter-tab {% if status_filter == 'rejected' %}active{% endif %}">
+        Rejected
+    </a>
+</div>
+
+<!-- Payments List -->
+<div class="data-table-container">
+    {% if payments %}
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>User</th>
+                <th>Amount</th>
+                <th>Payment Method</th>
+                <th>Screenshot</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for payment in payments %}
+            <tr>
+                <td data-label="User">
+                    <div class="user-cell">
+                        <strong>{{ payment.user.username }}</strong>
+                        <span>{{ payment.user.email }}</span>
+                    </div>
+                </td>
+                <td data-label="Amount">
+                    <div class="amount-cell">
+                        <strong>{{ payment.coins_amount }} coins</strong>
+                        <span>Rs. {{ payment.payment_amount }}</span>
+                    </div>
+                </td>
+                <td data-label="Method">
+                    <span class="badge badge-info">{{ payment.payment_method }}</span>
+                </td>
+                <td data-label="Screenshot">
+                    {% if payment.payment_screenshot %}
+                    <a href="{{ payment.payment_screenshot.url }}" target="_blank" class="screenshot-preview">
+                        <img src="{{ payment.payment_screenshot.url }}" alt="Payment Screenshot">
+                    </a>
+                    {% else %}
+                    <span>No screenshot</span>
+                    {% endif %}
+                </td>
+                <td data-label="Date">{{ payment.created_at|date:"M d, Y" }}</td>
+                <td data-label="Status">
+                    <span class="badge badge-{{ payment.status }}">{{ payment.get_status_display }}</span>
+                </td>
+                <td data-label="Actions">
+                    {% if payment.status == 'pending' %}
+                    <div class="action-buttons">
+                        <form method="post" action="{% url 'custom_admin:approve_payment' payment.id %}" style="display: inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn-approve" title="Approve">
+                                <i class="fas fa-check"></i>
+                            </button>
+                        </form>
+                        <form method="post" action="{% url 'custom_admin:reject_payment' payment.id %}" style="display: inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn-reject" title="Reject">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </form>
+                    </div>
+                    {% else %}
+                    <span class="text-muted">Processed</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="empty-state-large">
+        <i class="fas fa-inbox"></i>
+        <h3>No payment requests</h3>
+        <p>There are no {{ status_filter }} payment requests at the moment.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

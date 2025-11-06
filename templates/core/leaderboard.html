@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+
+{% block title %}Leaderboard - IGS OP{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="container">
+        <h1><i class="fas fa-ranking-star"></i> LEADERBOARD</h1>
+        <p>Top players of the month</p>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <!-- Top 3 Podium -->
+        {% if top_players|length >= 3 %}
+            <div class="podium">
+                <!-- 2nd Place -->
+                <div class="podium-item second">
+                    <div class="podium-rank">2</div>
+                    {% if top_players.1.avatar %}
+                        <img src="{{ top_players.1.avatar.url }}" alt="{{ top_players.1.username }}" class="podium-avatar">
+                    {% else %}
+                        <div class="podium-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                    {% endif %}
+                    <h3>{{ top_players.1.username }}</h3>
+                    <p class="podium-id">{{ top_players.1.user_id }}</p>
+                    <div class="podium-stats">
+                        <div class="stat">
+                            <i class="fas fa-trophy"></i> {{ top_players.1.total_tournaments_won }}
+                        </div>
+                        <div class="stat">
+                            <i class="fas fa-coins"></i> {{ top_players.1.coins }}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 1st Place -->
+                <div class="podium-item first">
+                    <div class="podium-crown">
+                        <i class="fas fa-crown"></i>
+                    </div>
+                    <div class="podium-rank">1</div>
+                    {% if top_players.0.avatar %}
+                        <img src="{{ top_players.0.avatar.url }}" alt="{{ top_players.0.username }}" class="podium-avatar">
+                    {% else %}
+                        <div class="podium-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                    {% endif %}
+                    <h3>{{ top_players.0.username }}</h3>
+                    <p class="podium-id">{{ top_players.0.user_id }}</p>
+                    <div class="podium-stats">
+                        <div class="stat">
+                            <i class="fas fa-trophy"></i> {{ top_players.0.total_tournaments_won }}
+                        </div>
+                        <div class="stat">
+                            <i class="fas fa-coins"></i> {{ top_players.0.coins }}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 3rd Place -->
+                <div class="podium-item third">
+                    <div class="podium-rank">3</div>
+                    {% if top_players.2.avatar %}
+                        <img src="{{ top_players.2.avatar.url }}" alt="{{ top_players.2.username }}" class="podium-avatar">
+                    {% else %}
+                        <div class="podium-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                    {% endif %}
+                    <h3>{{ top_players.2.username }}</h3>
+                    <p class="podium-id">{{ top_players.2.user_id }}</p>
+                    <div class="podium-stats">
+                        <div class="stat">
+                            <i class="fas fa-trophy"></i> {{ top_players.2.total_tournaments_won }}
+                        </div>
+                        <div class="stat">
+                            <i class="fas fa-coins"></i> {{ top_players.2.coins }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+        
+        <!-- Full Leaderboard -->
+        <div class="leaderboard-list">
+            <h2 class="section-title">All Rankings</h2>
+            
+            {% for player in top_players %}
+                <div class="leaderboard-item {% if forloop.counter <= 3 %}top-{{ forloop.counter }}{% endif %}">
+                    <div class="rank rank-{{ forloop.counter }}">
+                        {% if forloop.counter <= 3 %}
+                            <i class="fas fa-crown"></i>
+                        {% endif %}
+                        #{{ forloop.counter }}
+                    </div>
+                    
+                    <div class="player-info">
+                        {% if player.avatar %}
+                            <img src="{{ player.avatar.url }}" alt="{{ player.username }}" class="player-avatar">
+                        {% else %}
+                            <div class="player-avatar">
+                                <i class="fas fa-user"></i>
+                            </div>
+                        {% endif %}
+                        <div>
+                            <h4>{{ player.username }}</h4>
+                            <p>ID: {{ player.user_id }}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="player-stats">
+                        <div class="stat">
+                            <i class="fas fa-trophy"></i> 
+                            <span>{{ player.total_tournaments_won }}</span>
+                            <small>Wins</small>
+                        </div>
+                        <div class="stat">
+                            <i class="fas fa-gamepad"></i> 
+                            <span>{{ player.total_tournaments_played }}</span>
+                            <small>Played</small>
+                        </div>
+                        <div class="stat">
+                            <i class="fas fa-coins"></i> 
+                            <span>{{ player.coins }}</span>
+                            <small>Coins</small>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="empty-state">
+                    <i class="fas fa-trophy"></i>
+                    <p>No rankings available yet</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

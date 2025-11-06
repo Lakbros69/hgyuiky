@@ -1,0 +1,95 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Room Details - {{ tournament.title }}{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="container">
+        <a href="{% url 'tournament_detail' tournament.pk %}" class="back-link">
+            <i class="fas fa-arrow-left"></i> Back to Tournament
+        </a>
+        <h1><i class="fas fa-door-open"></i> Room Details</h1>
+        <p>{{ tournament.title }}</p>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <div class="room-details-card" style="max-width: 600px; margin: 0 auto; background: white; border-radius: 16px; padding: 2rem; box-shadow: 0 4px 16px rgba(1, 24, 216, 0.1);">
+            
+            <div class="alert alert-success" style="background: #dcfce7; color: #166534; padding: 1rem; border-radius: 8px; margin-bottom: 2rem;">
+                <i class="fas fa-check-circle"></i> 
+                <strong>Room is Ready!</strong> Join the game using the details below.
+            </div>
+
+            <div class="room-detail-item" style="background: #f8fafc; padding: 1.5rem; border-radius: 12px; margin-bottom: 1rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <label style="display: block; color: #64748b; font-size: 0.875rem; margin-bottom: 0.5rem;">Room ID</label>
+                        <div style="display: flex; align-items: center; gap: 1rem;">
+                            <span id="room-id" style="font-size: 1.5rem; font-weight: 700; color: #0118D8; font-family: monospace;">{{ tournament.room_id }}</span>
+                            <button onclick="copyToClipboard('room-id')" class="btn btn-sm btn-secondary" style="padding: 0.5rem 1rem;">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="room-detail-item" style="background: #f8fafc; padding: 1.5rem; border-radius: 12px; margin-bottom: 1.5rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <label style="display: block; color: #64748b; font-size: 0.875rem; margin-bottom: 0.5rem;">Password</label>
+                        <div style="display: flex; align-items: center; gap: 1rem;">
+                            <span id="room-password" style="font-size: 1.5rem; font-weight: 700; color: #0118D8; font-family: monospace;">{{ tournament.room_password }}</span>
+                            <button onclick="copyToClipboard('room-password')" class="btn btn-sm btn-secondary" style="padding: 0.5rem 1rem;">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tournament-info" style="border-top: 2px solid #e5e7eb; padding-top: 1.5rem;">
+                <h3 style="margin: 0 0 1rem 0; color: #1e293b;">Match Information</h3>
+                <div style="display: grid; gap: 0.75rem;">
+                    <div style="display: flex; justify-content: space-between;">
+                        <span style="color: #64748b;">Game:</span>
+                        <strong>{{ tournament.get_game_display }}</strong>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span style="color: #64748b;">Match Time:</span>
+                        <strong>{{ tournament.tournament_date|date:"M d, Y - h:i A" }}</strong>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span style="color: #64748b;">Entry Fee:</span>
+                        <strong><i class="fas fa-coins"></i> {{ tournament.entry_fee }} Points</strong>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span style="color: #64748b;">Prize Pool:</span>
+                        <strong style="color: #10b981;"><i class="fas fa-trophy"></i> {{ tournament.prize_pool }} Points</strong>
+                    </div>
+                </div>
+            </div>
+
+            <div class="alert alert-warning" style="background: #fef3c7; color: #92400e; padding: 1rem; border-radius: 8px; margin-top: 1.5rem;">
+                <i class="fas fa-exclamation-triangle"></i> 
+                <strong>Important:</strong> Make sure to join the room on time. Good luck!
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<script>
+function copyToClipboard(elementId) {
+    const text = document.getElementById(elementId).innerText;
+    navigator.clipboard.writeText(text).then(function() {
+        alert('Copied to clipboard: ' + text);
+    }, function(err) {
+        alert('Could not copy text: ', err);
+    });
+}
+</script>
+{% endblock %}

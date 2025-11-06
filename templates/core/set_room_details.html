@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Set Room Details{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="container">
+        <a href="{% url 'tournament_detail' tournament.pk %}" class="back-link">
+            <i class="fas fa-arrow-left"></i> Back to Tournament
+        </a>
+        <h1><i class="fas fa-door-open"></i> Set Room Details</h1>
+        <p>{{ tournament.title }}</p>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <div class="form-container" style="max-width: 600px; margin: 0 auto;">
+            <div class="alert alert-info" style="background: #dbeafe; color: #1e40af; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem;">
+                <i class="fas fa-info-circle"></i>
+                <strong>Note:</strong> Room credentials become visible to all participants once you save them. You can edit them again if needed.
+            </div>
+
+            <form method="post" class="tournament-form">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="room_id">Room ID *</label>
+                    <input type="text" id="room_id" name="room_id" class="form-input" required placeholder="Enter room ID" value="{{ tournament.room_id }}">
+                </div>
+
+                <div class="form-group">
+                    <label for="room_password">Room Password *</label>
+                    <input type="text" id="room_password" name="room_password" class="form-input" required placeholder="Enter room password" value="{{ tournament.room_password }}">
+                </div>
+
+                <div class="form-actions" style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 2rem;">
+                    <a href="{% url 'tournament_detail' tournament.pk %}" class="btn btn-secondary">
+                        <i class="fas fa-times"></i> Cancel
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Save Room Details
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}

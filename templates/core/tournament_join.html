@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block title %}Join {{ tournament.title }} - IGS OP{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="container">
+        <a href="{% url 'tournament_detail' tournament.pk %}" class="back-link">
+            <i class="fas fa-arrow-left"></i> Back to Tournament
+        </a>
+        <h1>Join Tournament</h1>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <div class="form-container">
+            <div class="form-card">
+                <h2>{{ tournament.title }}</h2>
+                
+                <div class="info-box">
+                    <div class="info-item">
+                        <strong>Entry Fee:</strong>
+                        <span class="text-primary">{{ tournament.entry_fee }} Coins</span>
+                    </div>
+                    <div class="info-item">
+                        <strong>Your Balance:</strong>
+                        <span class="text-success">{{ user.coins }} Coins</span>
+                    </div>
+                    <div class="info-item">
+                        <strong>After Join:</strong>
+                        <span>{{ user.coins|add:"-"|add:tournament.entry_fee }} Coins</span>
+                    </div>
+                </div>
+                
+                <form method="post" class="form">
+                    {% csrf_token %}
+                    
+                    <div class="form-group">
+                        <label>{{ form.in_game_name.label }}</label>
+                        {{ form.in_game_name }}
+                        {% if form.in_game_name.errors %}
+                            <span class="error">{{ form.in_game_name.errors.0 }}</span>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>{{ form.in_game_id.label }}</label>
+                        {{ form.in_game_id }}
+                        {% if form.in_game_id.errors %}
+                            <span class="error">{{ form.in_game_id.errors.0 }}</span>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i> 
+                        Make sure your in-game name and ID are correct. You won't be able to change them after joining.
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary btn-lg btn-block">
+                        <i class="fas fa-check-circle"></i> Confirm & Join
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

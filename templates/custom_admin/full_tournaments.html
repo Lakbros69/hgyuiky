@@ -1,0 +1,144 @@
+{% extends 'custom_admin/base.html' %}
+
+{% block title %}Full Tournaments - Admin Panel{% endblock %}
+
+{% block content %}
+<div class="page-header-actions">
+    <div>
+        <h2 class="section-title">Full Tournaments</h2>
+        <p class="section-subtitle">Manage upcoming events, participants, and prize pools</p>
+    </div>
+    <a href="{% url 'custom_admin:create_full_tournament' %}" class="btn btn-primary">
+        <i class="fas fa-plus"></i> Create New Tournament
+    </a>
+</div>
+
+{% if tournaments %}
+    <div class="tournaments-grid">
+        {% for tournament in tournaments %}
+            <div class="tournament-card">
+                <div class="tournament-header">
+                    <div class="tournament-id">
+                        <span class="matchroom-id">{{ tournament.matchroom_id }}</span>
+                        <span class="status-badge status-{{ tournament.status }}">{{ tournament.get_status_display }}</span>
+                    </div>
+                    <div class="tournament-game">
+                        <i class="fas fa-gamepad"></i> {{ tournament.get_game_display }}
+                    </div>
+                </div>
+                
+                <div class="tournament-body">
+                    <h3 class="tournament-title">{{ tournament.title }}</h3>
+                    
+                    <div class="tournament-meta">
+                        <div class="meta-item">
+                            <i class="fas fa-users"></i>
+                            <span>Team: {{ tournament.get_team_type_display }}</span>
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-user-friends"></i>
+                            <span>{{ tournament.current_participants }}/{{ tournament.max_players }} Players</span>
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-calendar"></i>
+                            <span>{{ tournament.game_time|date:"d M, Y" }}</span>
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-clock"></i>
+                            <span>{{ tournament.game_time|time:"g:i A" }}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="tournament-map">
+                        <i class="fas fa-map"></i> <strong>Map:</strong> {{ tournament.game_map }}
+                    </div>
+                    
+                    <hr class="card-divider">
+                    
+                    <div class="prize-info">
+                        <h4><i class="fas fa-award"></i> Prize Distribution</h4>
+                        <div class="prize-grid">
+                            <div class="prize-item">
+                                <i class="fas fa-trophy" style="color: #FFD700;"></i>
+                                <div>
+                                    <div class="prize-label">1st Place</div>
+                                    <div class="prize-value">{{ tournament.first_place_prize }} points</div>
+                                </div>
+                            </div>
+                            <div class="prize-item">
+                                <i class="fas fa-medal" style="color: #C0C0C0;"></i>
+                                <div>
+                                    <div class="prize-label">Rank 2-5</div>
+                                    <div class="prize-value">{{ tournament.rank_2_5_prize }} points</div>
+                                </div>
+                            </div>
+                            <div class="prize-item">
+                                <i class="fas fa-crosshairs" style="color: #ef4444;"></i>
+                                <div>
+                                    <div class="prize-label">Per Kill</div>
+                                    <div class="prize-value">{{ tournament.per_kill_prize }} points</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {% if tournament.entry_fee > 0 %}
+                        <div class="entry-fee">
+                            <i class="fas fa-ticket-alt"></i> Entry Fee: <strong>{{ tournament.entry_fee }} points</strong>
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="tournament-actions">
+                    {% if tournament.status == 'not_started' %}
+                        {% now "U" as current_timestamp %}
+                        {% if tournament.game_time|date:"U"|add:"-300" <= current_timestamp %}
+                            <!-- Within 5 minutes of start time -->
+                            <a href="{% url 'custom_admin:set_full_tournament_room' tournament.id %}" 
+                               class="btn btn-sm btn-warning">
+                                <i class="fas fa-key"></i> Set Room Details
+                            </a>
+                        {% endif %}
+                    {% elif tournament.status == 'ongoing' %}
+                        <a href="{% url 'custom_admin:finish_full_tournament' tournament.id %}" 
+                           class="btn btn-sm btn-success">
+                            <i class="fas fa-flag-checkered"></i> Finish Tournament
+                        </a>
+                    {% endif %}
+                    
+                    <!-- Delete button - always available -->
+                    <a href="{% url 'custom_admin:delete_full_tournament' tournament.id %}" 
+                       class="btn btn-sm btn-danger"
+                       onclick="return confirm('Are you sure you want to delete this tournament? This action cannot be undone.')">
+                        <i class="fas fa-trash"></i> Delete
+                    </a>
+                    
+                    {% if tournament.room_id %}
+                        <div class="room-info">
+                            <small><strong>Room:</strong> {{ tournament.room_id }} | {{ tournament.room_password }}</small>
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="tournament-footer">
+                    <small class="text-muted">
+                        <i class="fas fa-user"></i> Created by: {{ tournament.created_by.username|default:"Admin" }}
+                    </small>
+                    <small class="text-muted">
+                        <i class="fas fa-clock"></i> {{ tournament.created_at|timesince }} ago
+                    </small>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="empty-state">
+        <i class="fas fa-trophy fa-4x"></i>
+        <h3>No Tournaments Yet</h3>
+        <p>Create your first full tournament to get started</p>
+        <a href="{% url 'custom_admin:create_full_tournament' %}" class="btn btn-primary btn-lg">
+            <i class="fas fa-plus"></i> Create Tournament
+        </a>
+    </div>
+{% endif %}
+{% endblock %}

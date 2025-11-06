@@ -1,0 +1,919 @@
+{% extends 'custom_admin/base.html' %}
+
+{% block title %}Withdrawal Management - Admin Panel{% endblock %}
+
+{% block content %}
+<div class="withdrawals-header">
+    <div class="header-content">
+        <div class="header-info">
+            <h2 class="section-title">Withdrawal Management</h2>
+            <p class="section-subtitle">Review and process user withdrawal requests</p>
+        </div>
+        <div class="header-stats">
+            <div class="stat-item">
+                <span class="stat-number">{{ pending_withdrawals }}</span>
+                <span class="stat-label">Pending</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">{{ total_amount_pending }}</span>
+                <span class="stat-label">Points Pending</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">{{ total_amount_approved }}</span>
+                <span class="stat-label">Points Approved</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="filters-section">
+    <form method="get" class="filters-form">
+        <div class="filter-group">
+            <select name="status" class="filter-select" onchange="this.form.submit()">
+                <option value="all" {% if status_filter == 'all' %}selected{% endif %}>All Status</option>
+                <option value="pending" {% if status_filter == 'pending' %}selected{% endif %}>Pending</option>
+                <option value="approved" {% if status_filter == 'approved' %}selected{% endif %}>Approved</option>
+                <option value="rejected" {% if status_filter == 'rejected' %}selected{% endif %}>Rejected</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <input type="text" name="search" placeholder="Search by username, email, or payment method..." 
+                   value="{{ search }}" class="search-input">
+            <button type="submit" class="btn btn-primary btn-sm">
+                <i class="fas fa-search"></i> Search
+            </button>
+        </div>
+    </form>
+</div>
+
+{% if withdrawals %}
+    <!-- Desktop Table View -->
+    <div class="withdrawals-table-container desktop-only">
+        <table class="withdrawals-table">
+            <thead>
+                <tr>
+                    <th>User</th>
+                    <th>Amount</th>
+                    <th>Payment Method</th>
+                    <th>Status</th>
+                    <th>Requested</th>
+                    <th>Processed By</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for withdrawal in withdrawals %}
+                <tr class="withdrawal-row status-{{ withdrawal.status }}">
+                    <td>
+                        <div class="user-info">
+                            <div class="user-details">
+                                <div class="user-name">{{ withdrawal.user.username }}</div>
+                                <div class="user-email">{{ withdrawal.user.email }}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="amount-info">
+                            <span class="amount">{{ withdrawal.amount }}</span>
+                            <span class="currency">Points</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="payment-info">
+                            <div class="payment-method">{{ withdrawal.payment_method }}</div>
+                            {% if withdrawal.payment_qr %}
+                                <a href="{{ withdrawal.payment_qr.url }}" target="_blank" class="qr-link">
+                                    <i class="fas fa-qrcode"></i> View QR
+                                </a>
+                            {% endif %}
+                        </div>
+                    </td>
+                    <td>
+                        <span class="status-badge status-{{ withdrawal.status }}">
+                            {% if withdrawal.status == 'pending' %}
+                                <i class="fas fa-clock"></i> Pending
+                            {% elif withdrawal.status == 'approved' %}
+                                <i class="fas fa-check-circle"></i> Approved
+                            {% else %}
+                                <i class="fas fa-times-circle"></i> Rejected
+                            {% endif %}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="date-info">
+                            <div class="date">{{ withdrawal.created_at|date:"M d, Y" }}</div>
+                            <div class="time">{{ withdrawal.created_at|time:"g:i A" }}</div>
+                        </div>
+                    </td>
+                    <td>
+                        {% if withdrawal.processed_by %}
+                            <div class="processor-info">
+                                <div class="processor-name">{{ withdrawal.processed_by.username }}</div>
+                                <div class="processed-date">{{ withdrawal.processed_at|date:"M d, Y" }}</div>
+                            </div>
+                        {% else %}
+                            <span class="text-muted">-</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div class="table-actions">
+                            {% if withdrawal.status == 'pending' %}
+                                <a href="{% url 'custom_admin:process_withdrawal' withdrawal.id %}" 
+                                   class="action-btn process-btn" title="Process">
+                                    <i class="fas fa-cog"></i>
+                                </a>
+                            {% endif %}
+                            <button class="action-btn view-btn" onclick="viewDetails({{ withdrawal.id }})" title="View Details">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Mobile Card View -->
+    <div class="withdrawals-grid mobile-only">
+        {% for withdrawal in withdrawals %}
+        <div class="withdrawal-card status-{{ withdrawal.status }}">
+            <div class="withdrawal-card-header">
+                <div class="user-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="withdrawal-card-info">
+                    <h3 class="withdrawal-card-user">{{ withdrawal.user.username }}</h3>
+                    <div class="withdrawal-card-email">{{ withdrawal.user.email }}</div>
+                </div>
+                <div class="withdrawal-card-status">
+                    <span class="status-badge status-{{ withdrawal.status }}">
+                        {% if withdrawal.status == 'pending' %}
+                            <i class="fas fa-clock"></i> Pending
+                        {% elif withdrawal.status == 'approved' %}
+                            <i class="fas fa-check-circle"></i> Approved
+                        {% else %}
+                            <i class="fas fa-times-circle"></i> Rejected
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
+            
+            <div class="withdrawal-card-body">
+                <div class="withdrawal-card-row">
+                    <span class="label">Amount:</span>
+                    <span class="value amount-value">{{ withdrawal.amount }} Points</span>
+                </div>
+                
+                <div class="withdrawal-card-row">
+                    <span class="label">Payment Method:</span>
+                    <span class="value">{{ withdrawal.payment_method }}</span>
+                </div>
+                
+                <div class="withdrawal-card-row">
+                    <span class="label">Requested:</span>
+                    <span class="value">{{ withdrawal.created_at|date:"M d, Y g:i A" }}</span>
+                </div>
+                
+                {% if withdrawal.processed_by %}
+                <div class="withdrawal-card-row">
+                    <span class="label">Processed By:</span>
+                    <span class="value">{{ withdrawal.processed_by.username }}</span>
+                </div>
+                {% endif %}
+
+                {% if withdrawal.payment_qr %}
+                <div class="withdrawal-card-row">
+                    <span class="label">QR Code:</span>
+                    <a href="{{ withdrawal.payment_qr.url }}" target="_blank" class="qr-link-mobile">
+                        <i class="fas fa-qrcode"></i> View QR Code
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+            
+            <div class="withdrawal-card-actions">
+                {% if withdrawal.status == 'pending' %}
+                    <a href="{% url 'custom_admin:process_withdrawal' withdrawal.id %}" 
+                       class="card-action-btn process-btn">
+                        <i class="fas fa-cog"></i> Process Request
+                    </a>
+                {% endif %}
+                <button class="card-action-btn view-btn" onclick="viewDetails({{ withdrawal.id }})">
+                    <i class="fas fa-eye"></i> View Details
+                </button>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="empty-state">
+        <div class="empty-icon">
+            <i class="fas fa-money-bill-wave"></i>
+        </div>
+        <h3>No Withdrawal Requests</h3>
+        <p>No withdrawal requests found matching your criteria.</p>
+    </div>
+{% endif %}
+
+<!-- Details Modal -->
+<div id="detailsModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Withdrawal Details</h3>
+            <span class="close" onclick="closeModal()">&times;</span>
+        </div>
+        <div class="modal-body" id="modalBody">
+            <!-- Details will be loaded here -->
+        </div>
+    </div>
+</div>
+
+<style>
+/* Withdrawals Page Styles */
+.withdrawals-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 2rem;
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);
+    color: white;
+    margin-bottom: 2rem;
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2rem;
+}
+
+.header-info {
+    flex: 1;
+}
+
+.section-title {
+    color: white !important;
+    font-size: 2rem;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+}
+
+.section-subtitle {
+    color: rgba(255, 255, 255, 0.9) !important;
+    font-size: 1rem;
+}
+
+.header-stats {
+    display: flex;
+    gap: 2rem;
+}
+
+.stat-item {
+    text-align: center;
+    background: rgba(255, 255, 255, 0.15);
+    padding: 1.5rem 2rem;
+    border-radius: 16px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.stat-number {
+    display: block;
+    font-size: 2rem;
+    font-weight: 800;
+    color: white;
+    line-height: 1;
+}
+
+.stat-label {
+    display: block;
+    font-size: 0.875rem;
+    color: rgba(255, 255, 255, 0.9);
+    margin-top: 0.5rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* Filters */
+.filters-section {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    margin-bottom: 2rem;
+}
+
+.filters-form {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.filter-group {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.filter-select, .search-input {
+    padding: 0.75rem 1rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 0.875rem;
+}
+
+.search-input {
+    min-width: 300px;
+}
+
+/* Desktop Table */
+.withdrawals-table-container {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    border: 1px solid #f1f5f9;
+}
+
+.withdrawals-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.withdrawals-table th {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 1.25rem 1.5rem;
+    text-align: left;
+    font-weight: 600;
+    border: none;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.withdrawals-table td {
+    padding: 1.5rem 1.5rem;
+    border-bottom: 1px solid #f1f5f9;
+    vertical-align: middle;
+}
+
+.withdrawal-row:hover {
+    background: #f8fafc;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.user-name {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.user-email {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+}
+
+.amount-info {
+    text-align: center;
+}
+
+.amount {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+.currency {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+}
+
+.payment-method {
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.qr-link {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-size: 0.875rem;
+}
+
+.status-badge {
+    padding: 0.5rem 1rem;
+    border-radius: 25px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.status-badge.status-pending {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.status-badge.status-approved {
+    background: #dcfce7;
+    color: #065f46;
+}
+
+.status-badge.status-rejected {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.date-info {
+    text-align: center;
+}
+
+.date {
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.time {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+}
+
+.processor-name {
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.processed-date {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+}
+
+.table-actions {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+}
+
+.action-btn {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.875rem;
+}
+
+.process-btn {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    color: white;
+}
+
+.view-btn {
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    color: white;
+}
+
+.action-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Mobile Cards */
+.withdrawals-grid {
+    display: grid;
+    gap: 1.5rem;
+}
+
+.withdrawal-card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    border: 1px solid #f1f5f9;
+}
+
+.withdrawal-card-header {
+    display: flex;
+    align-items: center;
+    padding: 1.5rem;
+    gap: 1rem;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.user-avatar {
+    width: 48px;
+    height: 48px;
+    background: #f8fafc;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    color: var(--text-muted);
+}
+
+.withdrawal-card-info {
+    flex: 1;
+}
+
+.withdrawal-card-user {
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin: 0 0 0.25rem 0;
+}
+
+.withdrawal-card-email {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+}
+
+.withdrawal-card-body {
+    padding: 1.5rem;
+}
+
+.withdrawal-card-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+.withdrawal-card-row:last-child {
+    margin-bottom: 0;
+}
+
+.label {
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
+.value {
+    color: var(--text-primary);
+}
+
+.amount-value {
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+.qr-link-mobile {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+.withdrawal-card-actions {
+    padding: 1rem 1.5rem;
+    background: #f8fafc;
+    display: flex;
+    gap: 0.75rem;
+}
+
+.card-action-btn {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    text-decoration: none;
+    font-size: 0.875rem;
+}
+
+.card-action-btn.process-btn {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    color: white;
+}
+
+.card-action-btn.view-btn {
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    color: white;
+}
+
+/* Modal */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+    background-color: white;
+    margin: 5% auto;
+    padding: 0;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 600px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+.modal-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid #e2e8f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-body {
+    padding: 1.5rem;
+}
+
+.close {
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--text-muted);
+}
+
+/* Responsive */
+.desktop-only {
+    display: block;
+}
+
+.mobile-only {
+    display: none;
+}
+
+@media (max-width: 1200px) {
+    .withdrawals-header {
+        padding: 1.5rem;
+    }
+    
+    .header-stats {
+        gap: 1rem;
+    }
+    
+    .stat-item {
+        padding: 1rem 1.5rem;
+    }
+    
+    .stat-number {
+        font-size: 1.5rem;
+    }
+}
+
+@media (max-width: 992px) {
+    .header-content {
+        flex-direction: column;
+        gap: 1.5rem;
+        text-align: center;
+    }
+    
+    .header-stats {
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+    
+    .stat-item {
+        min-width: 120px;
+    }
+    
+    .filters-form {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .filter-group {
+        width: 100%;
+    }
+    
+    .search-input {
+        min-width: unset;
+        width: 100%;
+    }
+    
+    .filter-select {
+        width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    .withdrawals-header {
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+    
+    .section-title {
+        font-size: 1.5rem;
+    }
+    
+    .section-subtitle {
+        font-size: 0.875rem;
+    }
+    
+    .header-stats {
+        gap: 0.75rem;
+    }
+    
+    .stat-item {
+        padding: 0.75rem 1rem;
+        min-width: 100px;
+    }
+    
+    .stat-number {
+        font-size: 1.25rem;
+    }
+    
+    .stat-label {
+        font-size: 0.75rem;
+    }
+    
+    .filters-section {
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+    
+    .desktop-only {
+        display: none !important;
+    }
+    
+    .mobile-only {
+        display: block !important;
+    }
+    
+    .withdrawals-grid {
+        gap: 1rem;
+    }
+    
+    .withdrawal-card {
+        margin-bottom: 0;
+    }
+    
+    .withdrawal-card-header {
+        padding: 1rem;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
+    
+    .user-avatar {
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+    }
+    
+    .withdrawal-card-user {
+        font-size: 1rem;
+    }
+    
+    .withdrawal-card-email {
+        font-size: 0.8rem;
+    }
+    
+    .withdrawal-card-body {
+        padding: 1rem;
+    }
+    
+    .withdrawal-card-row {
+        margin-bottom: 0.75rem;
+        flex-wrap: wrap;
+        gap: 0.25rem;
+    }
+    
+    .label {
+        font-size: 0.875rem;
+        min-width: 100px;
+    }
+    
+    .value {
+        font-size: 0.875rem;
+        text-align: right;
+        flex: 1;
+    }
+    
+    .amount-value {
+        font-size: 1rem;
+    }
+    
+    .withdrawal-card-actions {
+        padding: 0.75rem 1rem;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .card-action-btn {
+        padding: 0.75rem;
+        font-size: 0.875rem;
+    }
+    
+    .modal-content {
+        width: 95%;
+        margin: 10% auto;
+    }
+    
+    .modal-header {
+        padding: 1rem;
+    }
+    
+    .modal-body {
+        padding: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .withdrawals-header {
+        padding: 0.75rem;
+    }
+    
+    .section-title {
+        font-size: 1.25rem;
+    }
+    
+    .header-stats {
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .stat-item {
+        width: 100%;
+        max-width: 200px;
+        padding: 0.75rem;
+    }
+    
+    .filters-section {
+        padding: 0.75rem;
+    }
+    
+    .withdrawal-card-header {
+        flex-direction: column;
+        text-align: center;
+        gap: 0.5rem;
+    }
+    
+    .withdrawal-card-status {
+        align-self: center;
+    }
+    
+    .withdrawal-card-row {
+        flex-direction: column;
+        text-align: center;
+        gap: 0.25rem;
+    }
+    
+    .label, .value {
+        text-align: center;
+    }
+    
+    .empty-state {
+        padding: 2rem 1rem;
+        text-align: center;
+    }
+    
+    .empty-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        color: var(--text-muted);
+    }
+}
+</style>
+
+<script>
+function viewDetails(withdrawalId) {
+    // This would typically fetch details via AJAX
+    // For now, just show a placeholder
+    document.getElementById('modalBody').innerHTML = `
+        <p>Loading withdrawal details for ID: ${withdrawalId}</p>
+        <p>This would show account details, QR code, and full transaction history.</p>
+    `;
+    document.getElementById('detailsModal').style.display = 'block';
+}
+
+function closeModal() {
+    document.getElementById('detailsModal').style.display = 'none';
+}
+
+// Close modal when clicking outside
+window.onclick = function(event) {
+    const modal = document.getElementById('detailsModal');
+    if (event.target === modal) {
+        modal.style.display = 'none';
+    }
+}
+</script>
+{% endblock %}
