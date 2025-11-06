@@ -1,0 +1,143 @@
+🎮 GAMING TOURNAMENT PLATFORM - QUICK START GUIDE
+================================================
+
+📋 STEP-BY-STEP SETUP (Copy and paste these commands)
+-------------------------------------------------------
+
+1. Open PowerShell/Command Prompt in the d:\trouna folder
+
+2. Create virtual environment:
+   python -m venv venv
+
+3. Activate virtual environment:
+   venv\Scripts\activate
+
+4. Install dependencies:
+   pip install -r requirements.txt
+
+5. Create database and tables:
+   python manage.py makemigrations
+   python manage.py migrate
+
+6. Create admin account:
+   python manage.py createsuperuser
+   (Enter username, email, password when prompted)
+
+7. Start the server:
+   python manage.py runserver
+
+8. Open browser and go to:
+   http://127.0.0.1:8000/
+
+9. Access admin panel:
+   http://127.0.0.1:8000/admin/
+   (Login with the superuser credentials you created)
+
+✅ FIRST TIME ADMIN SETUP
+--------------------------
+After logging into admin panel:
+
+1. Go to "Payment QRs" → Add New
+   - Upload QR codes for eSewa, Khalti, or Bank
+   - Add account details and instructions
+
+2. Go to "Store Items" → Add New
+   - Create items like "100 Free Fire Diamonds"
+   - Set price in coins
+   - Upload item image
+
+3. Go to "Tournaments" → Add New
+   - Create a sample tournament
+   - Set game, entry fee, prize pool, date/time
+   - Set max participants
+
+🎯 TEST USER FLOW
+------------------
+1. Go to homepage: http://127.0.0.1:8000/
+2. Click "Register" and create a test user account
+3. Go to "Buy Coins" and select a package
+4. Upload a test payment screenshot
+5. In admin panel, approve the payment request
+6. Join a tournament using the coins
+7. Purchase items from the store
+
+📁 PROJECT STRUCTURE
+--------------------
+d:/trouna/
+├── gaming_platform/      # Django project settings
+│   ├── settings.py      # Main configuration
+│   ├── urls.py          # Main URL routing
+│   └── wsgi.py          # WSGI config
+├── core/                # Main app
+│   ├── models.py        # Database models
+│   ├── views.py         # View functions
+│   ├── urls.py          # App URL routing
+│   ├── forms.py         # Forms
+│   ├── admin.py         # Admin customizations
+│   └── migrations/      # Database migrations
+├── templates/           # HTML templates
+│   ├── base.html        # Base template
+│   └── core/           # App templates
+├── static/             # Static files
+│   ├── css/           # Stylesheets (base, components, pages)
+│   └── js/            # JavaScript
+├── media/             # User uploads (created automatically)
+├── manage.py          # Django management script
+├── requirements.txt   # Python dependencies
+└── README.md         # Full documentation
+
+🔐 IMPORTANT NOTES
+------------------
+- Default SECRET_KEY should be changed for production
+- DEBUG = True is for development only
+- Upload real QR codes in admin for actual payments
+- Backup database regularly (db.sqlite3 file)
+
+💡 FEATURES INCLUDED
+--------------------
+✅ User registration with referral system
+✅ Tournament system (Free Fire & PUBG)
+✅ Wallet with QR payment verification
+✅ In-game item store
+✅ Leaderboard
+✅ Admin panel with full control
+✅ Notifications system
+✅ Transaction history
+✅ Profile management
+✅ Dark neon gaming UI theme
+
+🎨 UI THEME
+-----------
+- Dark background (#0a0a0f)
+- Purple primary (#8b5cf6)
+- Blue secondary (#3b82f6)
+- Neon glow effects
+- Smooth animations
+- Fully responsive
+
+🆘 TROUBLESHOOTING
+------------------
+Q: ModuleNotFoundError: No module named 'django'
+A: Make sure virtual environment is activated and run: pip install -r requirements.txt
+
+Q: No module named 'PIL'
+A: Install Pillow: pip install Pillow
+
+Q: Page shows "No such table" error
+A: Run migrations: python manage.py makemigrations && python manage.py migrate
+
+Q: Static files not loading
+A: Make sure DEBUG = True in settings.py for development
+
+Q: Can't login to admin
+A: Create superuser: python manage.py createsuperuser
+
+📧 ADMIN PANEL CREDENTIALS
+--------------------------
+After creating superuser in step 6, use those credentials at:
+http://127.0.0.1:8000/admin/
+
+🚀 READY TO GO!
+---------------
+Your gaming tournament platform is now ready!
+Visit http://127.0.0.1:8000/ to see your website.
